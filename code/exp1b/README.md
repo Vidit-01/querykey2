@@ -40,13 +40,13 @@ python code/exp1b/run.py --preset full --mode analyze --bootstrap-draws 10000
 
 ### Kaggle (multi-GPU DDP sharding)
 
-Add the repo to `/kaggle/working`, enable GPU, then:
+Upload the full `code/` tree to `/kaggle/working` (must include `code/common`, `code/exp1b`, and `code/requirements.txt`). Then from any working directory:
 
 ```bash
-bash code/exp1b/run_kaggle.sh full run 0 1
+bash /kaggle/working/code/exp1b/run_kaggle.sh full run 0 1
 ```
 
-On a 2-GPU kernel this uses `torchrun --nproc_per_node=2` and writes resumable shards to `/kaggle/working/exp1b/data/full/atlas_shard_*.jsonl`. For a manual multi-notebook split across Kaggle sessions, pass different `SHARD_INDEX` / `NUM_SHARDS` arguments (for example `0 16`, `1 16`, ...).
+The launcher resolves paths from the script location, so you do not need `cd` into a particular folder first. On a 2-GPU kernel it uses `torchrun --nproc_per_node=2` and writes resumable shards to `/kaggle/working/exp1b/data/full/atlas_shard_*.jsonl`. For a manual multi-notebook split across Kaggle sessions, pass different `SHARD_INDEX` / `NUM_SHARDS` arguments (for example `0 16`, `1 16`, ...).
 
 After all shards finish:
 
