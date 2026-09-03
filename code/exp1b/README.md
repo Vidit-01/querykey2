@@ -7,9 +7,14 @@ Raw resumable records are stored under `data/<preset>/atlas_shard_*.jsonl`. Anal
 ## Compute
 
 - Preferred machine: multi-GPU node (4-8 recent 24+ GB GPUs) or a GPU cluster. One process per GPU with disjoint shards.
+- Kaggle (2x T4/P100): use `run_kaggle.sh` to launch `torchrun` with one disjoint cell stream per GPU.
 - Quick smoke test: 5-20 minutes on one GPU; 15-60 minutes on CPU.
 - Full sweep: approximately 2-8 GPU-days total, depending on process launch overhead and GPU generation.
 - Storage: approximately 5-20 GB JSONL. Convert to Parquet downstream if needed; raw JSONL is intentionally append-safe.
+
+## Parallel with Experiment 1A
+
+You may start the atlas sweep while Experiment 1A is still running. The stages are independent: 1B does not read 1A outputs. Experiment 1A is a **blocking gate for interpretation and confirmatory claims**, not for launching compute. If 1A later fails, archive the 1B raw shards but do not treat labels or boundaries as proposal evidence until the gate passes.
 
 ## Run
 
@@ -31,6 +36,22 @@ Launch every shard index, then merge and bootstrap:
 
 ```bash
 python code/exp1b/run.py --preset full --mode analyze --bootstrap-draws 10000
+```
+
+### Kaggle (multi-GPU DDP sharding)
+
+Add the repo to `/kaggle/working`, enable GPU, then:
+
+```bash
+bash code/exp1b/run_kaggle.sh full run 0 1
+```
+
+On a 2-GPU kernel this uses `torchrun --nproc_per_node=2` and writes resumable shards to `/kaggle/working/exp1b/data/full/atlas_shard_*.jsonl`. For a manual multi-notebook split across Kaggle sessions, pass different `SHARD_INDEX` / `NUM_SHARDS` arguments (for example `0 16`, `1 16`, ...).
+
+After all shards finish:
+
+```bash
+bash code/exp1b/run_kaggle.sh full analyze
 ```
 
 Full analysis should only be interpreted after Experiment 1A's gate passes.

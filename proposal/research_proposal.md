@@ -3,7 +3,7 @@
 
 **Research Proposal** · v2.0 (mathematical audit revision)  
 **Author:** Vidit Gupta  
-**Field:** Deep Learning Theory · Optimization · Transformer Architectures  
+**Field:** Deep Learning Theory · Optimization · Transformer Architectures
 **Status:** Proposal - exact finite-width identities + preregistered experiments
 
 ---

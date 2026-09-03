@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import csv
 import math
+import os
 import sys
 import time
 from collections import defaultdict
@@ -16,6 +17,14 @@ import torch.nn.functional as F
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from common.distributed import (  # noqa: E402
+    barrier,
+    cleanup,
+    current_shard_plan,
+    is_main_process,
+    launched_with_torchrun,
+    resolve_sharding,
+)
 from common.geometry import (  # noqa: E402
     Coefficients,
     coefficient_grid,
@@ -467,6 +476,23 @@ def symmetry_check(
     )
 
 
+def default_output(preset: str) -> Path:
+    if os.environ.get("KAGGLE_KERNEL_RUN_TYPE"):
+        return Path("/kaggle/working") / "exp1b" / "data" / preset
+    return Path(__file__).parent / "data" / preset
+
+
+def resolve_device(args: argparse.Namespace) -> torch.device:
+    if args.distributed:
+        if not torch.cuda.is_available():
+            raise RuntimeError("distributed atlas sweep requires CUDA (use torchrun on GPU)")
+        resolve_sharding(args.shard_index, args.num_shards, distributed=True)
+        plan = current_shard_plan()
+        assert plan is not None
+        return torch.device(f"cuda:{plan.local_rank}")
+    return torch.device(args.device)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--preset", choices=["quick", "full"], default="quick")
@@ -477,54 +503,95 @@ def main() -> None:
     parser.add_argument("--shard-index", type=int, default=0)
     parser.add_argument("--num-shards", type=int, default=1)
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
-    parser.add_argument("--bootstrap-draws", type=int, default=2000)
+    parser.add_argument(
+        "--distributed",
+        action="store_true",
+        help="Use torchrun process-group sharding (one disjoint cell stream per GPU).",
+    )
+    parser.add_argument(
+        "--bootstrap-draws",
+        type=int,
+        default=2000,
+    )
     args = parser.parse_args()
-    output = ensure_output(args.output or Path(__file__).parent / "data" / args.preset)
-    create_manifest(output, experiment="exp1b", arguments=vars(args))
-    if args.mode in {"run", "all"}:
-        d, m, n = (32, 8, 24) if args.preset == "quick" else (64, 16, 64)
-        seeds = args.seeds or (2 if args.preset == "quick" else 64)
-        cells = discovery_grid(args.preset)
-        shard_path = output / f"atlas_shard_{args.shard_index:04d}.jsonl"
-        completed = {row["cell_id"] for row in read_jsonl(shard_path)}
-        for position, cell_id in enumerate(range(args.shard_index, len(cells), args.num_shards)):
-            if cell_id in completed:
-                continue
-            started = time.perf_counter()
-            try:
-                rows = rows_for_cell(
-                    cells[cell_id],
-                    cell_id,
-                    preset=args.preset,
+    if args.distributed and not launched_with_torchrun():
+        raise RuntimeError(
+            "Pass --distributed only under torchrun, e.g. "
+            "torchrun --standalone --nproc_per_node=2 code/exp1b/run.py --distributed"
+        )
+    shard_index, num_shards, rank, world_size = resolve_sharding(
+        args.shard_index, args.num_shards, distributed=args.distributed
+    )
+    output = ensure_output(args.output or default_output(args.preset))
+    manifest_args = dict(vars(args))
+    manifest_args.update(
+        {
+            "effective_shard_index": shard_index,
+            "effective_num_shards": num_shards,
+            "distributed_rank": rank,
+            "distributed_world_size": world_size,
+        }
+    )
+    create_manifest(output, experiment="exp1b", arguments=manifest_args)
+    try:
+        if args.mode in {"run", "all"}:
+            d, m, n = (32, 8, 24) if args.preset == "quick" else (64, 16, 64)
+            seeds = args.seeds or (2 if args.preset == "quick" else 64)
+            cells = discovery_grid(args.preset)
+            device = resolve_device(args)
+            shard_path = output / f"atlas_shard_{shard_index:04d}.jsonl"
+            completed = {row["cell_id"] for row in read_jsonl(shard_path)}
+            assigned = list(range(shard_index, len(cells), num_shards))
+            for position, cell_id in enumerate(assigned):
+                if cell_id in completed:
+                    continue
+                started = time.perf_counter()
+                try:
+                    rows = rows_for_cell(
+                        cells[cell_id],
+                        cell_id,
+                        preset=args.preset,
+                        seeds=seeds,
+                        d=d,
+                        m=m,
+                        n=n,
+                        base_seed=args.seed,
+                        device=device,
+                    )
+                    for row in rows:
+                        row["cell_elapsed_seconds"] = time.perf_counter() - started
+                        row["worker_rank"] = rank
+                        row["worker_world_size"] = world_size
+                    append_jsonl(shard_path, rows)
+                except (RuntimeError, ValueError) as error:
+                    record_failure(output, {"cell_id": cell_id, "rank": rank}, error)
+                    raise
+                print(
+                    f"[rank {rank} {position + 1}/{len(assigned)}] "
+                    f"cell {cell_id}/{len(cells) - 1}"
+                )
+            if shard_index == 0 and is_main_process():
+                symmetry_check(
+                    cells,
+                    count=3 if args.preset == "quick" else 50,
                     seeds=seeds,
                     d=d,
                     m=m,
                     n=n,
-                    base_seed=args.seed,
-                    device=torch.device(args.device),
+                    base_seed=args.seed + 30_000_000,
+                    device=device,
+                    output=output,
                 )
-                for row in rows:
-                    row["cell_elapsed_seconds"] = time.perf_counter() - started
-                append_jsonl(shard_path, rows)
-            except (RuntimeError, ValueError) as error:
-                record_failure(output, {"cell_id": cell_id}, error)
-                raise
-            print(f"[{position + 1}] cell {cell_id}/{len(cells) - 1}")
-        if args.shard_index == 0:
-            symmetry_check(
-                cells,
-                count=3 if args.preset == "quick" else 50,
-                seeds=seeds,
-                d=d,
-                m=m,
-                n=n,
-                base_seed=args.seed + 30_000_000,
-                device=torch.device(args.device),
-                output=output,
-            )
-    if args.mode in {"analyze", "all"}:
-        analyze(output, args.bootstrap_draws)
-        print(f"Experiment 1B results written to {output}")
+            if args.distributed:
+                barrier()
+        if args.mode in {"analyze", "all"}:
+            if args.distributed and not is_main_process():
+                return
+            analyze(output, args.bootstrap_draws)
+            print(f"Experiment 1B results written to {output}")
+    finally:
+        if args.distributed:
+            cleanup()
 
 
 if __name__ == "__main__":

@@ -1,0 +1,76 @@
+{
+  "cells": 3,
+  "interpretation": "Differences should shrink with seed count; signs are distributionally, not draw-wise, redundant.",
+  "results": [
+    {
+      "aggregates": {
+        "negative_beta": {
+          "logit_mean": -0.2576253227352694,
+          "logit_variance": 0.05360112672992523,
+          "normalized_entropy": 0.993789992877363,
+          "self_mass": 0.027586287573117544
+        },
+        "negative_gamma": {
+          "logit_mean": -0.2576253227352694,
+          "logit_variance": 0.05360112672992523,
+          "normalized_entropy": 0.993789992877363,
+          "self_mass": 0.027586287573117544
+        },
+        "positive": {
+          "logit_mean": -0.2576253227352694,
+          "logit_variance": 0.05360112672992523,
+          "normalized_entropy": 0.993789992877363,
+          "self_mass": 0.027586287573117544
+        }
+      },
+      "cell_id": 0
+    },
+    {
+      "aggregates": {
+        "negative_beta": {
+          "logit_mean": 0.013716035200025248,
+          "logit_variance": 0.7949032882968412,
+          "normalized_entropy": 0.9049967265946132,
+          "self_mass": 0.022670071118533724
+        },
+        "negative_gamma": {
+          "logit_mean": -0.013716035200025248,
+          "logit_variance": 0.7949032882968412,
+          "normalized_entropy": 0.9143789061507941,
+          "self_mass": 0.03658187853059673
+        },
+        "positive": {
+          "logit_mean": -0.08105714775849142,
+          "logit_variance": 0.7645613128050914,
+          "normalized_entropy": 0.917006688619167,
+          "self_mass": 0.03144966748185185
+        }
+      },
+      "cell_id": 7
+    },
+    {
+      "aggregates": {
+        "negative_beta": {
+          "logit_mean": 2.7264118652278473,
+          "logit_variance": 17.745071838469546,
+          "normalized_entropy": 0.32251142144050493,
+          "self_mass": 0.3871226933779971
+        },
+        "negative_gamma": {
+          "logit_mean": 2.7264118652278473,
+          "logit_variance": 17.745071838469546,
+          "normalized_entropy": 0.32251142144050493,
+          "self_mass": 0.3871226933779971
+        },
+        "positive": {
+          "logit_mean": 2.7264118652278473,
+          "logit_variance": 17.745071838469546,
+          "normalized_entropy": 0.32251142144050493,
+          "self_mass": 0.3871226933779971
+        }
+      },
+      "cell_id": 14
+    }
+  ],
+  "seeds_per_variant": 2
+}
