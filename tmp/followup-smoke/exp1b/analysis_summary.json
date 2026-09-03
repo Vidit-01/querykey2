@@ -1,0 +1,9 @@
+{
+  "label_counts": {
+    "boundary_uncertain": 1,
+    "diffuse": 3
+  },
+  "raw_rows": 4,
+  "stratified_cells": 4,
+  "unique_coefficient_cells": 1
+}

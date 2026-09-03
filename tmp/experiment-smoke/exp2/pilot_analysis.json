@@ -1,0 +1,35 @@
+{
+  "confirmatory_feasible": true,
+  "confirmatory_seeds": 8,
+  "contrasts": [
+    {
+      "ci95_lower": -0.09218311309814453,
+      "ci95_upper": -0.09218311309814453,
+      "contrast": "diverse_portfolio_minus_architecture_baseline",
+      "equivalent_within_0.01_nats": false,
+      "holm_rejected": false,
+      "mean_difference_nats": -0.09218311309814453,
+      "p_value": 1.0,
+      "paired_seeds": 1,
+      "required_confirmatory_seeds": null,
+      "standardized_effect": null,
+      "test": "paired_sign_permutation"
+    },
+    {
+      "ci95_lower": -0.12273597717285156,
+      "ci95_upper": -0.12273597717285156,
+      "contrast": "diverse_portfolio_minus_matched_layer_homogeneous",
+      "equivalent_within_0.01_nats": false,
+      "holm_rejected": false,
+      "mean_difference_nats": -0.12273597717285156,
+      "p_value": 1.0,
+      "paired_seeds": 1,
+      "required_confirmatory_seeds": null,
+      "standardized_effect": null,
+      "test": "paired_sign_permutation"
+    }
+  ],
+  "max_available_seeds": 32,
+  "smallest_practical_effect": 0.01,
+  "study": "pilot"
+}

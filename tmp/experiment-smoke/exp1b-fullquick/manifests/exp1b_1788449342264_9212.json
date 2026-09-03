@@ -1,0 +1,24 @@
+{
+  "arguments": {
+    "bootstrap_draws": 20,
+    "device": "cuda",
+    "mode": "all",
+    "num_shards": 1,
+    "output": "tmp\\experiment-smoke\\exp1b-fullquick",
+    "preset": "quick",
+    "seed": 20260829,
+    "seeds": 1,
+    "shard_index": 0
+  },
+  "created_unix": 1788449342.2643764,
+  "cuda_available": true,
+  "cuda_device": "NVIDIA GeForce RTX 2050",
+  "experiment": "exp1b",
+  "failures": [],
+  "git_commit": null,
+  "inputs": {},
+  "numpy": "2.3.4",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.0 (tags/v3.14.0:ebf955d, Oct  7 2025, 10:15:03) [MSC v.1944 64 bit (AMD64)]",
+  "torch": "2.11.0+cu128"
+}

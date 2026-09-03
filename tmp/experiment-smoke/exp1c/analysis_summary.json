@@ -1,0 +1,10 @@
+{
+  "label_counts": {
+    "concentrated": 2,
+    "gradient_starved": 1,
+    "screened_candidate": 5
+  },
+  "raw_rows": 8,
+  "stratified_cells": 8,
+  "unique_coefficient_cells": 2
+}

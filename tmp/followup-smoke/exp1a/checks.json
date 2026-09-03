@@ -1,0 +1,42 @@
+{
+  "baseline_initializer": {
+    "draws": 500,
+    "ks_p_value": 0.7704365372945415,
+    "ks_statistic": 0.042,
+    "passed": true,
+    "variance_ratio": 1.0466114554745618
+  },
+  "common_bias": {
+    "absolute_error": 0.0003680715749601188,
+    "draws": 200,
+    "empirical_ratio_of_expectations": -0.07144232887762905,
+    "passed": true,
+    "predicted_ratio_of_expectations": -0.07181040045258917
+  },
+  "gradients": [
+    {
+      "configuration": 0,
+      "finite_difference_max_relative_error": 3.107570867300069e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 1,
+      "finite_difference_max_relative_error": 6.913111749717871e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 2,
+      "finite_difference_max_relative_error": 1.8998258521918387e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    }
+  ],
+  "integration": {
+    "checkpoint_bitwise_equal": true,
+    "first_forward_finite": true,
+    "initializer_changed_qk": true,
+    "passed": true
+  }
+}
