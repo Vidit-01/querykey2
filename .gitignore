@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.ruff_cache/
+.venv/
+venv/
+*.egg-info/
+.DS_Store
+Thumbs.db
+
+# Local smoke / scratch (not needed on cloud)
+tmp/

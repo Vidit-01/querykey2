@@ -47,6 +47,7 @@ from common.metrics import (  # noqa: E402
     gram_features,
     kernel_metrics,
 )
+from common.progress import progress, stage  # noqa: E402
 from common.models import DecoderLM, ModelConfig  # noqa: E402
 
 
@@ -240,11 +241,20 @@ def rows_for_cell(
 
 
 def analyze(output: Path, bootstrap_draws: int) -> None:
+    stage(f"Experiment 1B analyze: bootstrap_draws={bootstrap_draws}")
     rows: list[dict] = []
-    for path in sorted(output.glob("atlas_shard_*.jsonl")):
-        rows.extend(read_jsonl(path))
+    shard_paths = sorted(output.glob("atlas_shard_*.jsonl"))
+    stage(f"loading {len(shard_paths)} atlas shard(s) into memory...")
+    for path in shard_paths:
+        shard_rows = read_jsonl(path)
+        rows.extend(shard_rows)
+        stage(
+            f"  {path.name}: {len(shard_rows):,} rows "
+            f"({len(rows):,} cumulative)"
+        )
     if not rows:
         raise FileNotFoundError("no atlas shard files found")
+    stage(f"loaded {len(rows):,} raw rows")
     baseline = [
         row
         for row in rows
@@ -263,13 +273,28 @@ def analyze(output: Path, bootstrap_draws: int) -> None:
         ),
         "derived_from": "independent_s1_baseline" if baseline else "all_quick_rows",
     }
+    stage(
+        "pilot thresholds: "
+        f"jacobian_floor={thresholds['jacobian_floor']:.4g}, "
+        f"update_floor={thresholds['update_floor']:.4g}, "
+        f"rank_floor={thresholds['rank_floor']:.4g}"
+    )
     write_json(output / "pilot_thresholds.json", thresholds)
     groups: dict[tuple, list[dict]] = defaultdict(list)
     keys = ("cell_id", "input_kind", "correlation", "mask", "d", "m", "n")
     for row in rows:
         groups[tuple(row[key] for key in keys)].append(row)
+    metric_count = len(METRICS_FOR_INTERVALS)
+    stage(
+        f"bootstrap + classify {len(groups):,} strata "
+        f"x {metric_count} metrics..."
+    )
     summaries = []
-    for group_key, group_rows in groups.items():
+    for group_key, group_rows in progress(
+        groups.items(),
+        desc="bootstrap",
+        total=len(groups),
+    ):
         intervals = {}
         for metric in METRICS_FOR_INTERVALS:
             intervals[metric] = cluster_bootstrap_ci(
@@ -318,24 +343,29 @@ def analyze(output: Path, bootstrap_draws: int) -> None:
             summary[f"{metric}_lower"] = lower
             summary[f"{metric}_upper"] = upper
         summaries.append(summary)
+    stage(f"writing atlas_summary.csv ({len(summaries):,} rows)...")
     fieldnames = sorted({key for row in summaries for key in row})
     with (output / "atlas_summary.csv").open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(summaries)
+    stage("generating figures...")
     plot_outputs(rows, summaries, output)
+    label_counts = {
+        label: sum(row["label"] == label for row in summaries)
+        for label in sorted({row["label"] for row in summaries})
+    }
+    stage(f"label counts: {label_counts}")
     write_json(
         output / "analysis_summary.json",
         {
             "raw_rows": len(rows),
             "stratified_cells": len(summaries),
             "unique_coefficient_cells": len({row["cell_id"] for row in rows}),
-            "label_counts": {
-                label: sum(row["label"] == label for row in summaries)
-                for label in sorted({row["label"] for row in summaries})
-            },
+            "label_counts": label_counts,
         },
     )
+    stage(f"analyze complete -> {output}")
 
 
 def plot_outputs(rows: list[dict], summaries: list[dict], output: Path) -> None:
@@ -366,7 +396,12 @@ def plot_outputs(rows: list[dict], summaries: list[dict], output: Path) -> None:
             int(row["n"]),
         )
         strata[key].append(row)
-    for (input_kind, correlation, mask, phi, d, m, n), values in strata.items():
+    strata_items = list(strata.items())
+    for (input_kind, correlation, mask, phi, d, m, n), values in progress(
+        strata_items,
+        desc="atlas figures",
+        total=len(strata_items),
+    ):
         fig, axis = plt.subplots(figsize=(6.2, 4.6))
         colors = [label_values[row["label"]] for row in values]
         scatter = axis.scatter(
@@ -393,6 +428,7 @@ def plot_outputs(rows: list[dict], summaries: list[dict], output: Path) -> None:
             dpi=160,
         )
         plt.close(fig)
+    stage("writing exact_moment_residuals.png...")
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
     axes[0].scatter(
         [row["predicted_logit_mean"] for row in rows],

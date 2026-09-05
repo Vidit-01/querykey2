@@ -30,6 +30,27 @@ python -m pip install -r code/requirements.txt
 
 Install the CUDA-specific PyTorch wheel recommended for the target cluster before installing the remaining requirements if the default wheel is unsuitable.
 
+## Clone on cloud (Git LFS)
+
+Large experiment shards (`*.jsonl`, checkpoints, caches) are stored with Git LFS. After cloning:
+
+```bash
+git lfs install
+git clone https://github.com/Vidit-01/querykey2.git
+cd querykey2
+git lfs pull
+python -m pip install -r code/requirements.txt
+```
+
+Verify data is present before running:
+
+```bash
+python code/exp1a/merge_status.py   # exp1a shard inventory
+ls -lh code/exp1b/data/full/atlas_shard_*.jsonl
+```
+
+Then continue the pipeline (for example `python code/exp1b/run.py --preset full --mode analyze`).
+
 ## Reproducibility rules
 
 - Run stages in order. Experiment 1A is a blocking gate.
