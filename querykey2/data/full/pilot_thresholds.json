@@ -1,0 +1,6 @@
+{
+  "derived_from": "independent_s1_baseline",
+  "jacobian_floor": 0.05559182241559029,
+  "rank_floor": 0.27505725932947245,
+  "update_floor": 9.749585197103054e-06
+}
