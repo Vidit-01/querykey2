@@ -24,7 +24,7 @@ Windows PowerShell:
 
 ```powershell
 .\code\exp1a\run_windows.ps1 quick
-.\code\exp1a\run_windows.ps1 full 0 16
+.\code\exp1a\run_windows.ps1 full 1 16
 ```
 
 For a 16-shard full run, launch shard indices 0 through 15, then run:

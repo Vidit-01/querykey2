@@ -1,0 +1,144 @@
+{
+  "baseline_initializer": {
+    "draws": 20000,
+    "ks_p_value": 0.5742491522097537,
+    "ks_statistic": 0.007799999999999974,
+    "passed": true,
+    "variance_ratio": 1.0093346560483074
+  },
+  "common_bias": {
+    "absolute_error": 0.0001757636765216397,
+    "draws": 20000,
+    "empirical_ratio_of_expectations": -0.07198616412911081,
+    "passed": true,
+    "predicted_ratio_of_expectations": -0.07181040045258917
+  },
+  "gradients": [
+    {
+      "configuration": 0,
+      "finite_difference_max_relative_error": 3.55376728045087e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 1,
+      "finite_difference_max_relative_error": 1.0850457199396146e-09,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 2,
+      "finite_difference_max_relative_error": 1.4308410012375816e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 3,
+      "finite_difference_max_relative_error": 2.7607341412938524e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 4,
+      "finite_difference_max_relative_error": 3.7837219468705996e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 5,
+      "finite_difference_max_relative_error": 2.634017496385511e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 6,
+      "finite_difference_max_relative_error": 3.548681930201171e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 7,
+      "finite_difference_max_relative_error": 2.2028978641230879e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 8,
+      "finite_difference_max_relative_error": 1.730920962117466e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 9,
+      "finite_difference_max_relative_error": 4.1632164382576775e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 10,
+      "finite_difference_max_relative_error": 4.700545396748035e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 11,
+      "finite_difference_max_relative_error": 2.6862612134692654e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 12,
+      "finite_difference_max_relative_error": 1.8266268497768579e-09,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 13,
+      "finite_difference_max_relative_error": 6.636799011014598e-09,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 14,
+      "finite_difference_max_relative_error": 1.9577164889206244e-09,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 15,
+      "finite_difference_max_relative_error": 3.121043229414866e-09,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 16,
+      "finite_difference_max_relative_error": 1.0176064927212874e-09,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 17,
+      "finite_difference_max_relative_error": 6.713648526002203e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 18,
+      "finite_difference_max_relative_error": 3.526442471368796e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "configuration": 19,
+      "finite_difference_max_relative_error": 4.0055880834444224e-10,
+      "identity_max_absolute_error": 0.0,
+      "passed": true
+    }
+  ],
+  "integration": {
+    "checkpoint_bitwise_equal": true,
+    "first_forward_finite": true,
+    "initializer_changed_qk": true,
+    "passed": true
+  }
+}

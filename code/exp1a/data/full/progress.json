@@ -1,0 +1,9 @@
+{
+  "completed_configs": 810,
+  "num_shards": 16,
+  "rebalance": false,
+  "remaining_configs": 54,
+  "shard_index": 1,
+  "this_worker_assigned": 54,
+  "total_configs": 864
+}

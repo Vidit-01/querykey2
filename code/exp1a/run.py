@@ -29,6 +29,7 @@ from common.io_utils import (  # noqa: E402
     append_jsonl,
     create_manifest,
     ensure_output,
+    jsonl_unique_values,
     read_jsonl,
     write_json,
 )
@@ -373,22 +374,49 @@ def main() -> None:
     parser.add_argument("--max-draws", type=int, default=200_000)
     parser.add_argument("--shard-index", type=int, default=0)
     parser.add_argument("--num-shards", type=int, default=1)
+    parser.add_argument(
+        "--rebalance",
+        action="store_true",
+        help="Split remaining configs across the current shard workers instead of the original slice.",
+    )
     args = parser.parse_args()
     output = ensure_output(args.output or Path(__file__).parent / "data" / args.preset)
     create_manifest(output, experiment="exp1a", arguments=vars(args))
+    configurations = configuration_list(args.preset)
+    completed_ids = jsonl_unique_values(output, "moments_shard_*.jsonl", "config_id")
+    remaining = [config for config in configurations if config["config_id"] not in completed_ids]
+    if args.rebalance:
+        selected = remaining[args.shard_index :: args.num_shards]
+    else:
+        selected = [
+            config
+            for config in configurations[args.shard_index :: args.num_shards]
+            if config["config_id"] not in completed_ids
+        ]
     if args.mode in {"run", "all"}:
         minimum_draws = args.draws or (200 if args.preset == "quick" else 20_000)
         if args.preset == "full":
             minimum_draws = max(20_000, minimum_draws)
             if args.max_draws < minimum_draws:
                 raise ValueError("--max-draws must be at least 20000 in full mode")
-        configurations = configuration_list(args.preset)
-        selected = configurations[args.shard_index :: args.num_shards]
         shard_path = output / f"moments_shard_{args.shard_index:04d}.jsonl"
-        existing = {row["config_id"] for row in read_jsonl(shard_path)}
+        print(
+            f"resume: {len(completed_ids)}/{len(configurations)} configs done, "
+            f"{len(remaining)} remaining globally, this worker {len(selected)}"
+        )
+        write_json(
+            output / "progress.json",
+            {
+                "completed_configs": len(completed_ids),
+                "total_configs": len(configurations),
+                "remaining_configs": len(remaining),
+                "this_worker_assigned": len(selected),
+                "shard_index": args.shard_index,
+                "num_shards": args.num_shards,
+                "rebalance": args.rebalance,
+            },
+        )
         for index, config in enumerate(selected):
-            if config["config_id"] in existing:
-                continue
             started = time.perf_counter()
             draws = minimum_draws
             while True:
@@ -405,22 +433,34 @@ def main() -> None:
             result["elapsed_seconds"] = time.perf_counter() - started
             append_jsonl(shard_path, [result])
             print(f"[{index + 1}/{len(selected)}] {config['config_id']}")
-        checks = {
-            "gradients": gradient_checks(
-                3 if args.preset == "quick" else 20, args.seed + 8_000_000
-            ),
-            "common_bias": common_bias_check(
-                max(200, minimum_draws), args.seed + 9_000_000
-            ),
-            "baseline_initializer": baseline_initializer_check(
-                max(500, minimum_draws), args.seed + 9_500_000
-            ),
-            "integration": integration_checkpoint_check(args.seed + 10_000_000),
-        }
-        write_json(output / "checks.json", checks)
+        checks_path = output / "checks.json"
+        if checks_path.exists():
+            print(f"keeping existing {checks_path}")
+        else:
+            checks = {
+                "gradients": gradient_checks(
+                    3 if args.preset == "quick" else 20, args.seed + 8_000_000
+                ),
+                "common_bias": common_bias_check(
+                    max(200, minimum_draws), args.seed + 9_000_000
+                ),
+                "baseline_initializer": baseline_initializer_check(
+                    max(500, minimum_draws), args.seed + 9_500_000
+                ),
+                "integration": integration_checkpoint_check(args.seed + 10_000_000),
+            }
+            write_json(checks_path, checks)
+    finished_ids = jsonl_unique_values(output, "moments_shard_*.jsonl", "config_id")
+    complete = len(finished_ids) >= len(configurations) and (output / "checks.json").exists()
     if args.mode in {"analyze", "all"}:
-        analyze(output)
-        print(f"Experiment 1A results written to {output}")
+        if args.mode == "all" and not complete:
+            print(
+                f"skipping analyze: {len(finished_ids)}/{len(configurations)} configs "
+                f"on disk; rerun with --mode analyze after every shard finishes"
+            )
+        else:
+            analyze(output)
+            print(f"Experiment 1A results written to {output}")
 
 
 if __name__ == "__main__":

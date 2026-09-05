@@ -35,6 +35,7 @@ from common.io_utils import (  # noqa: E402
     append_jsonl,
     create_manifest,
     ensure_output,
+    jsonl_unique_values,
     read_jsonl,
     record_failure,
     write_json,
@@ -509,6 +510,11 @@ def main() -> None:
         help="Use torchrun process-group sharding (one disjoint cell stream per GPU).",
     )
     parser.add_argument(
+        "--rebalance",
+        action="store_true",
+        help="Split remaining cells across the current shard workers instead of the original slice.",
+    )
+    parser.add_argument(
         "--bootstrap-draws",
         type=int,
         default=2000,
@@ -530,6 +536,7 @@ def main() -> None:
             "effective_num_shards": num_shards,
             "distributed_rank": rank,
             "distributed_world_size": world_size,
+            "rebalance": args.rebalance,
         }
     )
     create_manifest(output, experiment="exp1b", arguments=manifest_args)
@@ -540,11 +547,34 @@ def main() -> None:
             cells = discovery_grid(args.preset)
             device = resolve_device(args)
             shard_path = output / f"atlas_shard_{shard_index:04d}.jsonl"
-            completed = {row["cell_id"] for row in read_jsonl(shard_path)}
-            assigned = list(range(shard_index, len(cells), num_shards))
+            completed = jsonl_unique_values(output, "atlas_shard_*.jsonl", "cell_id")
+            remaining = [cell_id for cell_id in range(len(cells)) if cell_id not in completed]
+            if args.rebalance:
+                assigned = remaining[shard_index::num_shards]
+            else:
+                assigned = [
+                    cell_id
+                    for cell_id in range(shard_index, len(cells), num_shards)
+                    if cell_id not in completed
+                ]
+            print(
+                f"resume: {len(completed)}/{len(cells)} cells done, "
+                f"{len(remaining)} remaining globally, this worker {len(assigned)}"
+            )
+            if is_main_process():
+                write_json(
+                    output / "progress.json",
+                    {
+                        "completed_cells": len(completed),
+                        "total_cells": len(cells),
+                        "remaining_cells": len(remaining),
+                        "this_worker_assigned": len(assigned),
+                        "effective_shard_index": shard_index,
+                        "effective_num_shards": num_shards,
+                        "rebalance": args.rebalance,
+                    },
+                )
             for position, cell_id in enumerate(assigned):
-                if cell_id in completed:
-                    continue
                 started = time.perf_counter()
                 try:
                     rows = rows_for_cell(
@@ -570,7 +600,16 @@ def main() -> None:
                     f"[rank {rank} {position + 1}/{len(assigned)}] "
                     f"cell {cell_id}/{len(cells) - 1}"
                 )
-            if shard_index == 0 and is_main_process():
+            if args.distributed:
+                barrier()
+            finished_cells = jsonl_unique_values(output, "atlas_shard_*.jsonl", "cell_id")
+            symmetry_path = output / "sign_symmetry_check.json"
+            if (
+                shard_index == 0
+                and is_main_process()
+                and len(finished_cells) >= len(cells)
+                and not symmetry_path.exists()
+            ):
                 symmetry_check(
                     cells,
                     count=3 if args.preset == "quick" else 50,
@@ -582,13 +621,25 @@ def main() -> None:
                     device=device,
                     output=output,
                 )
-            if args.distributed:
-                barrier()
+            elif is_main_process() and len(finished_cells) < len(cells):
+                print(
+                    f"skipping sign-symmetry check: {len(finished_cells)}/{len(cells)} "
+                    "cells on disk"
+                )
+        finished_cells = jsonl_unique_values(output, "atlas_shard_*.jsonl", "cell_id")
+        expected_cells = len(discovery_grid(args.preset))
+        complete = len(finished_cells) >= expected_cells
         if args.mode in {"analyze", "all"}:
             if args.distributed and not is_main_process():
                 return
-            analyze(output, args.bootstrap_draws)
-            print(f"Experiment 1B results written to {output}")
+            if args.mode == "all" and not complete:
+                print(
+                    f"skipping analyze: {len(finished_cells)}/{expected_cells} cells "
+                    "on disk; rerun with --mode analyze after every shard finishes"
+                )
+            else:
+                analyze(output, args.bootstrap_draws)
+                print(f"Experiment 1B results written to {output}")
     finally:
         if args.distributed:
             cleanup()

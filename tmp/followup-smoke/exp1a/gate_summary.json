@@ -1,7 +1,0 @@
-{
-  "gradient_failures": 0,
-  "moment_configurations": 1,
-  "moment_failures": 1,
-  "note": "Downstream confirmatory claims are blocked unless passed is true.",
-  "passed": false
-}

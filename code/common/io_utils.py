@@ -60,20 +60,31 @@ def append_jsonl(path: str | Path, rows: Iterable[dict[str, Any]]) -> None:
         os.fsync(handle.fileno())
 
 
-def read_jsonl(path: str | Path) -> list[dict[str, Any]]:
+def iter_jsonl(path: str | Path) -> Iterable[dict[str, Any]]:
     source = Path(path)
     if not source.exists():
-        return []
-    records: list[dict[str, Any]] = []
+        return
     with source.open("r", encoding="utf-8") as handle:
         for line_number, line in enumerate(handle, 1):
             if not line.strip():
                 continue
             try:
-                records.append(json.loads(line))
+                yield json.loads(line)
             except json.JSONDecodeError as error:
                 raise ValueError(f"invalid JSONL at {source}:{line_number}") from error
-    return records
+
+
+def read_jsonl(path: str | Path) -> list[dict[str, Any]]:
+    return list(iter_jsonl(path))
+
+
+def jsonl_unique_values(directory: str | Path, pattern: str, field: str) -> set[Any]:
+    values: set[Any] = set()
+    for path in sorted(Path(directory).glob(pattern)):
+        for row in iter_jsonl(path):
+            if field in row:
+                values.add(row[field])
+    return values
 
 
 def completed_keys(path: str | Path, fields: tuple[str, ...]) -> set[tuple[Any, ...]]:
