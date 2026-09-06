@@ -1,0 +1,13 @@
+{
+  "label_counts": {
+    "boundary_uncertain": 1241,
+    "concentrated": 3793,
+    "diffuse": 5362,
+    "gradient_starved": 1,
+    "screened_candidate": 2867,
+    "self_locked": 472
+  },
+  "raw_rows": 879104,
+  "stratified_cells": 13736,
+  "unique_coefficient_cells": 1717
+}

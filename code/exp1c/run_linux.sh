@@ -4,9 +4,7 @@ PRESET="${1:-quick}"
 SHARD_INDEX="${2:-0}"
 NUM_SHARDS="${3:-1}"
 EXTRA=()
-if [[ "$PRESET" == "full" ]]; then
-  EXTRA+=(--replicate-discovery-grid)
-fi
+# Pass --replicate-discovery-grid explicitly for preregistered full replication.
 if [[ ! -f "code/exp1c/data/$PRESET/adaptive_points.json" ]]; then
   python code/exp1c/run.py --preset "$PRESET" --mode propose
 fi

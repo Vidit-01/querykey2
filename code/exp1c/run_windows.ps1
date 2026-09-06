@@ -7,9 +7,7 @@ if (-not (Test-Path $Points)) {
   python code/exp1c/run.py --preset $Preset --mode propose
 }
 $Extra = @()
-if ($Preset -eq "full") {
-  $Extra += "--replicate-discovery-grid"
-}
+# Pass --replicate-discovery-grid explicitly for preregistered full replication.
 python code/exp1c/run.py `
   --preset $Preset `
   --mode run `

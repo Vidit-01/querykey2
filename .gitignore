@@ -9,3 +9,8 @@ Thumbs.db
 
 # Local smoke / scratch (not needed on cloud)
 tmp/
+
+# Large data bundles (upload to Kaggle/Drive; exceeds GitHub 100MB limit)
+exp1b_full_shards.zip
+exp1b_full.zip
+*.zip

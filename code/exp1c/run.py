@@ -6,6 +6,7 @@ import argparse
 import csv
 import json
 import math
+import os
 import sys
 from pathlib import Path
 
@@ -22,6 +23,14 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from common.distributed import (  # noqa: E402
+    barrier,
+    cleanup,
+    current_shard_plan,
+    is_main_process,
+    launched_with_torchrun,
+    resolve_sharding,
+)
 from common.geometry import Coefficients, coefficient_grid, coefficients_from_alpha_phi  # noqa: E402
 from common.io_utils import (  # noqa: E402
     append_jsonl,
@@ -254,9 +263,13 @@ def make_tasks(points: list[dict], *, quick: bool, replicate_discovery: bool) ->
     if quick:
         dimensions = [(32, 8, 24)]
         base = adaptive
-    else:
+    elif replicate_discovery:
         dimensions = [(64, 16, 64), (128, 16, 128), (128, 32, 128), (256, 32, 256)]
-        base = discovery_coefficients() + adaptive if replicate_discovery else adaptive
+        base = discovery_coefficients() + adaptive
+    else:
+        # Lighter default: reference geometry + one transfer width.
+        dimensions = [(64, 16, 64), (128, 16, 128)]
+        base = adaptive
     tasks = []
     for d, m, n in dimensions:
         for source_index, coefficients in enumerate(base):
@@ -271,6 +284,39 @@ def make_tasks(points: list[dict], *, quick: bool, replicate_discovery: bool) ->
                 }
             )
     return tasks
+
+
+def default_output(preset: str) -> Path:
+    if os.environ.get("KAGGLE_KERNEL_RUN_TYPE"):
+        return Path("/kaggle/working") / "exp1c" / "data" / preset
+    return Path(__file__).parent / "data" / preset
+
+
+def default_discovery_summary(preset: str) -> Path:
+    if custom := os.environ.get("KAGGLE_DISCOVERY_SUMMARY"):
+        return Path(custom)
+    repo = Path(__file__).parents[1] / "exp1b" / "data" / preset / "atlas_summary.csv"
+    if repo.exists():
+        return repo
+    if os.environ.get("KAGGLE_KERNEL_RUN_TYPE"):
+        working = Path("/kaggle/working") / "exp1b" / "data" / preset / "atlas_summary.csv"
+        if working.exists():
+            return working
+        input_root = Path("/kaggle/input")
+        if input_root.is_dir():
+            for path in sorted(input_root.rglob("atlas_summary.csv")):
+                return path
+    return repo
+
+
+def resolve_device(args: argparse.Namespace) -> torch.device:
+    if args.distributed:
+        if not torch.cuda.is_available():
+            raise RuntimeError("distributed 1C run requires CUDA (use torchrun on GPU)")
+        plan = current_shard_plan()
+        assert plan is not None
+        return torch.device(f"cuda:{plan.local_rank}")
+    return torch.device(args.device)
 
 
 def freeze_portfolio(summary_path: Path, output: Path, heads: int = 8) -> None:
@@ -328,65 +374,110 @@ def main() -> None:
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     parser.add_argument("--bootstrap-draws", type=int, default=2000)
     parser.add_argument("--replicate-discovery-grid", action="store_true")
+    parser.add_argument(
+        "--distributed",
+        action="store_true",
+        help="Use torchrun process-group sharding (one disjoint task stream per GPU).",
+    )
     args = parser.parse_args()
-    if args.discovery_summary is None:
-        args.discovery_summary = (
-            Path(__file__).parents[1]
-            / "exp1b"
-            / "data"
-            / args.preset
-            / "atlas_summary.csv"
+    if args.distributed and not launched_with_torchrun():
+        raise RuntimeError(
+            "Pass --distributed only under torchrun, e.g. "
+            "torchrun --standalone --nproc_per_node=2 code/exp1c/run.py --distributed"
         )
-    output = ensure_output(args.output or Path(__file__).parent / "data" / args.preset)
+    shard_index, num_shards, rank, world_size = resolve_sharding(
+        args.shard_index, args.num_shards, distributed=args.distributed
+    )
+    if args.discovery_summary is None:
+        args.discovery_summary = default_discovery_summary(args.preset)
+    if not args.discovery_summary.exists():
+        raise FileNotFoundError(
+            f"discovery summary not found: {args.discovery_summary} "
+            "(attach 1B atlas_summary.csv as a Kaggle dataset or set KAGGLE_DISCOVERY_SUMMARY)"
+        )
+    output = ensure_output(args.output or default_output(args.preset))
+    manifest_args = dict(vars(args))
+    manifest_args.update(
+        {
+            "effective_shard_index": shard_index,
+            "effective_num_shards": num_shards,
+            "distributed_rank": rank,
+            "distributed_world_size": world_size,
+        }
+    )
     create_manifest(
         output,
         experiment="exp1c",
-        arguments=vars(args),
+        arguments=manifest_args,
         inputs=[args.discovery_summary],
     )
     quick = args.preset == "quick"
     points_path = output / "adaptive_points.json"
-    if args.mode in {"propose", "all"}:
-        discovery_rows = read_csv(args.discovery_summary)
-        model, metrics = fit_surrogate(discovery_rows, args.seed)
-        joblib.dump(model, output / "discovery_surrogate.joblib")
-        write_json(output / "held_out_metrics.json", metrics)
-        count = args.adaptive_cells or (3 if quick else 500)
-        write_json(points_path, propose_points(model, count=count, seed=args.seed + 1, quick=quick))
-    if args.mode in {"run", "all"}:
-        if not points_path.exists():
-            raise FileNotFoundError("run propose mode first")
-        points = json.loads(points_path.read_text(encoding="utf-8"))
-        tasks = make_tasks(
-            points, quick=quick, replicate_discovery=args.replicate_discovery_grid
-        )
-        seeds = args.seeds or (2 if quick else 256)
-        shard = output / f"atlas_shard_{args.shard_index:04d}.jsonl"
-        completed = {row["cell_id"] for row in read_jsonl(shard)}
-        selected = tasks[args.shard_index :: args.num_shards]
-        for position, task in enumerate(selected):
-            if task["task_id"] in completed:
-                continue
-            rows = rows_for_cell(
-                task["coefficients"],
-                task["task_id"],
-                preset="quick" if quick else "full",
-                seeds=seeds,
-                d=task["d"],
-                m=task["m"],
-                n=task["n"],
-                base_seed=args.seed,
-                device=torch.device(args.device),
+    try:
+        if args.mode in {"propose", "all"}:
+            if not args.distributed or is_main_process():
+                discovery_rows = read_csv(args.discovery_summary)
+                model, metrics = fit_surrogate(discovery_rows, args.seed)
+                joblib.dump(model, output / "discovery_surrogate.joblib")
+                write_json(output / "held_out_metrics.json", metrics)
+                count = args.adaptive_cells or (3 if quick else 120)
+                write_json(
+                    points_path,
+                    propose_points(model, count=count, seed=args.seed + 1, quick=quick),
+                )
+            if args.distributed:
+                barrier()
+        if args.mode in {"run", "all"}:
+            if not points_path.exists():
+                raise FileNotFoundError("run propose mode first")
+            points = json.loads(points_path.read_text(encoding="utf-8"))
+            tasks = make_tasks(
+                points, quick=quick, replicate_discovery=args.replicate_discovery_grid
             )
-            for row in rows:
-                row["source_index"] = task["source_index"]
-                row["stage"] = "adaptive_replication"
-            append_jsonl(shard, rows)
-            print(f"[{position + 1}/{len(selected)}] task {task['task_id']}")
-    if args.mode in {"analyze", "all"}:
-        analyze_atlas(output, args.bootstrap_draws)
-        freeze_portfolio(output / "atlas_summary.csv", output)
-        print(f"Experiment 1C results written to {output}")
+            seeds = args.seeds or (2 if quick else 64)
+            device = resolve_device(args)
+            shard = output / f"atlas_shard_{shard_index:04d}.jsonl"
+            completed = {row["cell_id"] for row in read_jsonl(shard)}
+            selected = tasks[shard_index::num_shards]
+            print(
+                f"resume: {len(completed)} tasks on shard {shard_index}, "
+                f"{len(selected)} assigned to this worker (rank {rank}/{world_size})"
+            )
+            for position, task in enumerate(selected):
+                if task["task_id"] in completed:
+                    continue
+                rows = rows_for_cell(
+                    task["coefficients"],
+                    task["task_id"],
+                    preset="quick" if quick else "full",
+                    seeds=seeds,
+                    d=task["d"],
+                    m=task["m"],
+                    n=task["n"],
+                    base_seed=args.seed,
+                    device=device,
+                )
+                for row in rows:
+                    row["source_index"] = task["source_index"]
+                    row["stage"] = "adaptive_replication"
+                    row["worker_rank"] = rank
+                    row["worker_world_size"] = world_size
+                append_jsonl(shard, rows)
+                print(
+                    f"[rank {rank} {position + 1}/{len(selected)}] "
+                    f"task {task['task_id']}/{len(tasks) - 1}"
+                )
+            if args.distributed:
+                barrier()
+        if args.mode in {"analyze", "all"}:
+            if args.distributed and not is_main_process():
+                return
+            analyze_atlas(output, args.bootstrap_draws)
+            freeze_portfolio(output / "atlas_summary.csv", output)
+            print(f"Experiment 1C results written to {output}")
+    finally:
+        if args.distributed:
+            cleanup()
 
 
 if __name__ == "__main__":
