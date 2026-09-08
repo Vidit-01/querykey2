@@ -25,6 +25,25 @@ def launched_with_torchrun() -> bool:
     return "LOCAL_RANK" in os.environ or "RANK" in os.environ
 
 
+def _local_world_size() -> int:
+    for key in ("LOCAL_WORLD_SIZE", "WORLD_SIZE"):
+        value = os.environ.get(key)
+        if value:
+            return int(value)
+    return 1
+
+
+def bind_cuda_device(local_rank: int | None = None) -> int:
+    """Map a torchrun rank onto a visible GPU, packing extra workers per device."""
+    if not torch.cuda.is_available():
+        return 0
+    if local_rank is None:
+        local_rank = int(os.environ.get("LOCAL_RANK", "0"))
+    index = local_rank % torch.cuda.device_count()
+    torch.cuda.set_device(index)
+    return index
+
+
 def init_distributed(backend: str | None = None) -> ShardPlan:
     global _STATE
     if _STATE is not None:
@@ -33,9 +52,11 @@ def init_distributed(backend: str | None = None) -> ShardPlan:
         raise RuntimeError("distributed mode requires torchrun (LOCAL_RANK/RANK not set)")
     if torch.cuda.is_available():
         local_rank = int(os.environ.get("LOCAL_RANK", "0"))
-        torch.cuda.set_device(local_rank)
+        n_gpus = torch.cuda.device_count()
+        bind_cuda_device(local_rank)
         if backend is None:
-            backend = "nccl" if dist.is_nccl_available() else "gloo"
+            packed = _local_world_size() > n_gpus
+            backend = "gloo" if packed or not dist.is_nccl_available() else "nccl"
     else:
         local_rank = 0
         backend = backend or "gloo"

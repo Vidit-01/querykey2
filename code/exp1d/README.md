@@ -11,7 +11,7 @@ Full selection enforces 15 diffuse, 15 concentrated, 15 self-locked, 15 screened
 - Full paired study: approximately 2-10 GPU-days total for 8 seeds and 2,000 steps.
 - Storage: 2-20 GB, mostly step traces and the cached TinyStories byte stream.
 
-Each training job is an independent `(point, task, seed)` run of a one-block model. Multi-GPU machines should run one disjoint job stream per GPU (`torchrun --nproc_per_node=<gpus> ... --distributed`), not data-parallel the tiny model across devices. Launchers detect visible CUDA devices and do this automatically.
+Each training job is an independent `(point, task, seed)` run of a tiny one-block model. That job cannot fill a 15 GB GPU by itself (~0.5 GB, often ~30-40% SM util). Launchers therefore pack several workers per GPU (`torchrun --nproc_per_node=<gpus * workers>`), not data-parallel one model. Default is 8 workers per GPU (`WORKERS_PER_GPU=8`). Lower it if you OOM; raise it if utilization is still low.
 
 ## Data
 
@@ -33,7 +33,7 @@ Windows PowerShell:
 .\code\exp1d\run_windows.ps1 full 0 16 C:\data\TinyStories-train.jsonl
 ```
 
-If more than one GPU is visible, the launchers start `torchrun` and split jobs across devices. Pin a single GPU with `CUDA_VISIBLE_DEVICES=0` when you want a one-device shard.
+If CUDA is visible, the launchers start `torchrun` with `GPUs × 8` processes so each device runs several trainings at once. Pin a single GPU with `CUDA_VISIBLE_DEVICES=0` when you want one device; it will still pack 8 workers on that GPU.
 
 After every full shard:
 
@@ -49,7 +49,7 @@ Upload the full `code/` tree to `/kaggle/working` (`code/common`, `code/exp1d`, 
 # Freeze points once (optional if bundled selected_points.json is present)
 bash /kaggle/working/code/exp1d/run_kaggle.sh full select
 
-# Run shard 0 of 16 (2-GPU kernel uses torchrun automatically)
+# Run shard 0 of 16 (2-GPU kernel packs 8 workers per GPU by default)
 bash /kaggle/working/code/exp1d/run_kaggle.sh full run 0 16
 
 # After every shard finishes
@@ -61,7 +61,8 @@ Optional environment variables:
 - `KAGGLE_TINYSTORIES` — path to a local TinyStories jsonl
 - `KAGGLE_OUTPUT` — defaults to `/kaggle/working/exp1d/data/<preset>`
 - `BOOTSTRAP_DRAWS` — defaults to `10000` on analyze
+- `WORKERS_PER_GPU` — independent trainings packed on each GPU (default 8)
 
-On a 2-GPU kernel, `run` mode launches `torchrun --nproc_per_node=2` and splits `(point, task, seed)` jobs across GPUs. Rank 0 builds the TinyStories cache and writes selection; workers pin `cuda:0` and `cuda:1`. For multi-notebook splits, pass different `SHARD_INDEX` / `NUM_SHARDS` pairs (`0 16`, `1 16`, ...).
+On a 2-GPU kernel, `run` mode launches `torchrun --nproc_per_node=16` (8 workers × 2 GPUs) and maps ranks onto `cuda:0` / `cuda:1`. Rank 0 builds the TinyStories cache and writes selection. For multi-notebook splits, pass different `SHARD_INDEX` / `NUM_SHARDS` pairs (`0 16`, `1 16`, ...).
 
 Only a confidence interval excluding zero in the preregistered direction passes the atlas-usefulness gate.

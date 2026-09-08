@@ -12,6 +12,7 @@ CODE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 RUN_PY="${SCRIPT_DIR}/run.py"
 REQ_FILE="${CODE_ROOT}/requirements.txt"
 OUTPUT="${KAGGLE_OUTPUT:-/kaggle/working/exp1d/data/${PRESET}}"
+WORKERS_PER_GPU="${WORKERS_PER_GPU:-8}"
 
 if [[ ! -f "$RUN_PY" ]]; then
   echo "error: missing ${RUN_PY}" >&2
@@ -35,6 +36,7 @@ cd "$CODE_ROOT"
 COMMON_ARGS=(
   --preset "$PRESET"
   --output "$OUTPUT"
+  --workers-per-gpu "$WORKERS_PER_GPU"
   "${EXTRA[@]}"
 )
 
@@ -54,8 +56,10 @@ if [[ "$MODE" == "select" || "$MODE" == "all" ]]; then
 fi
 
 if [[ "$MODE" == "run" || "$MODE" == "all" ]]; then
-  if [[ "$NUM_GPUS" -gt 1 ]]; then
-    torchrun --standalone --nproc_per_node="$NUM_GPUS" "$RUN_PY" \
+  if [[ "$NUM_GPUS" -ge 1 ]]; then
+    NPROC=$((NUM_GPUS * WORKERS_PER_GPU))
+    echo "packing ${WORKERS_PER_GPU} trainings per GPU (${NPROC} processes)"
+    torchrun --standalone --nproc_per_node="$NPROC" "$RUN_PY" \
       --mode run \
       "${COMMON_ARGS[@]}" \
       --shard-index "$SHARD_INDEX" \

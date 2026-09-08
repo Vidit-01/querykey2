@@ -26,6 +26,7 @@ from common.data import (  # noqa: E402
 )
 from common.distributed import (  # noqa: E402
     barrier,
+    bind_cuda_device,
     cleanup,
     current_shard_plan,
     is_main_process,
@@ -58,6 +59,8 @@ STRATUM_COUNTS = {
     "screened_candidate": 15,
     "boundary_uncertain": 20,
 }
+
+DEFAULT_WORKERS_PER_GPU = 8
 
 
 def read_summary(path: Path) -> list[dict]:
@@ -98,7 +101,8 @@ def resolve_device(args: argparse.Namespace) -> torch.device:
             raise RuntimeError("distributed 1D run requires CUDA (use torchrun on GPU)")
         plan = current_shard_plan()
         assert plan is not None
-        return torch.device(f"cuda:{plan.local_rank}")
+        index = bind_cuda_device(plan.local_rank)
+        return torch.device(f"cuda:{index}")
     return torch.device(args.device)
 
 
@@ -249,6 +253,7 @@ def train_one(
     model.apply_query_key_geometry([[coefficients] * config.heads], seed=paired_seed + 50_000)
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
     trace_path = output / f"trace_point{row['point_id']:03d}_{task}_seed{paired_seed}.jsonl"
+    traces = []
     losses = []
     tokens_seen = 0
     clipped = 0
@@ -287,20 +292,19 @@ def train_one(
         value = float(loss.detach())
         losses.append(value)
         tokens_seen += step_tokens
-        append_jsonl(
-            trace_path,
-            [
-                {
-                    "step": step,
-                    "tokens_seen": tokens_seen,
-                    "loss": value,
-                    "total_gradient_norm": float(total_norm),
-                    **stats,
-                }
-            ],
+        traces.append(
+            {
+                "step": step,
+                "tokens_seen": tokens_seen,
+                "loss": value,
+                "total_gradient_norm": float(total_norm),
+                **stats,
+            }
         )
         if not math.isfinite(value):
             break
+    if traces:
+        append_jsonl(trace_path, traces)
     x = np.arange(len(losses), dtype=float) * (tokens_seen / max(1, len(losses)))
     slope = float(np.polyfit(x, np.asarray(losses), 1)[0]) if len(losses) >= 2 else math.nan
     return {
@@ -396,7 +400,13 @@ def main() -> None:
     parser.add_argument(
         "--distributed",
         action="store_true",
-        help="Use torchrun process-group sharding (one disjoint training job per GPU).",
+        help="Use torchrun process-group sharding (disjoint training jobs, packed onto GPUs).",
+    )
+    parser.add_argument(
+        "--workers-per-gpu",
+        type=int,
+        default=int(os.environ.get("WORKERS_PER_GPU", DEFAULT_WORKERS_PER_GPU)),
+        help="Independent trainings to pack on each GPU (launchers set nproc_per_node accordingly).",
     )
     parser.add_argument("--bootstrap-draws", type=int, default=10000)
     args = parser.parse_args()
@@ -500,10 +510,15 @@ def main() -> None:
             device_name = (
                 torch.cuda.get_device_name(device) if device.type == "cuda" else str(device)
             )
+            packed = (
+                world_size // max(1, torch.cuda.device_count())
+                if device.type == "cuda"
+                else 1
+            )
             print(
                 f"rank {rank}/{world_size} device={device} ({device_name}) "
-                f"shard {shard_index}/{num_shards}: {len(assigned)} jobs "
-                f"({len(completed)} already on disk)"
+                f"{packed} workers/GPU shard {shard_index}/{num_shards}: "
+                f"{len(assigned)} jobs ({len(completed)} already on disk)"
             )
             for position, (point, task, paired_seed) in enumerate(assigned):
                 key = (point["point_id"], task, paired_seed)

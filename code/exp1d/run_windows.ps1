@@ -13,14 +13,17 @@ if (-not (Test-Path "code/exp1d/data/$Preset/selected_points.json")) {
 
 $NumGpus = python -c "import torch; print(torch.cuda.device_count() if torch.cuda.is_available() else 0)"
 $NumGpus = [int]([string]$NumGpus).Trim()
+$Workers = if ($env:WORKERS_PER_GPU) { [int]$env:WORKERS_PER_GPU } else { 8 }
 
-if ($NumGpus -gt 1) {
-  Write-Host "using $NumGpus GPUs via torchrun"
-  torchrun --standalone --nproc_per_node=$NumGpus code/exp1d/run.py `
+if ($NumGpus -ge 1) {
+  $Nproc = $NumGpus * $Workers
+  Write-Host "using $NumGpus GPUs x $Workers workers via torchrun ($Nproc processes)"
+  torchrun --standalone --nproc_per_node=$Nproc code/exp1d/run.py `
     --preset $Preset `
     --mode run `
     --shard-index $ShardIndex `
     --num-shards $NumShards `
+    --workers-per-gpu $Workers `
     --distributed `
     @Extra
 } else {
