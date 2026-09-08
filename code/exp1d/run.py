@@ -397,7 +397,16 @@ def main() -> None:
         )
     else:
         source = selection_path if selection_path.exists() else bundled_selected_points(args.preset)
-        points = json.loads(source.read_text(encoding="utf-8"))["points"]
+        if source.exists():
+            points = json.loads(source.read_text(encoding="utf-8"))["points"]
+        else:
+            points = freeze_selection(
+                args.atlas_summary,
+                output,
+                quick=quick,
+                seed=args.seed,
+                discovery_summary=args.discovery_summary,
+            )
     include_text = args.include_text or not quick
     token_cache = None
     if include_text:
