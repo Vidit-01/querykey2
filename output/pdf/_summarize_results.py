@@ -60,19 +60,15 @@ def main() -> None:
         cell_maj[cell_rows[0]["label"]] += 1
     print("\nUnique cells labeled (phi=0 ref):", dict(cell_maj), "total", sum(cell_maj.values()))
 
-    res_mean, res_var = [], []
-    for path in sorted((ROOT / "code/exp1b/data/full").glob("atlas_shard_*.jsonl")):
-        for i, line in enumerate(path.read_text(encoding="utf-8").splitlines()):
-            if i >= 10000:
-                break
-            r = json.loads(line)
-            res_mean.append(r["logit_mean"] - r["predicted_logit_mean"])
-            res_var.append(r["logit_variance"] - r["predicted_logit_variance"])
-    print(
-        "\nMoment residuals (20k-row sample):",
-        f"mean err {statistics.mean(res_mean):.4f} +/- {statistics.pstdev(res_mean):.4f}",
-        f"var err {statistics.mean(res_var):.4f} +/- {statistics.pstdev(res_var):.4f}",
-    )
+    diag = ROOT / "output/pdf/moment_diagnostics.json"
+    if diag.exists():
+        payload = json.loads(diag.read_text(encoding="utf-8"))
+        print("\nUse output/pdf/moment_diagnostics.json (full 879k rows), not a 20k prefix.")
+        print("1A", payload["exp1a"])
+        print("1B raw", payload["exp1b"]["raw_records"])
+        print("1B seed-averaged", payload["exp1b"]["seed_averaged_cells"])
+    else:
+        print("\nNo moment_diagnostics.json; run output/pdf/make_moment_diagnostics.py")
 
 
 if __name__ == "__main__":

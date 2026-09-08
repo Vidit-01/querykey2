@@ -9,7 +9,7 @@
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{toc}{\contentsline {section}{\numberline {2.1}What problem is being studied?}{4}{section.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2.2}Why two stages before training a large LM?}{4}{section.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.2}Why staged experiments before training a large LM?}{4}{section.2.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {chapter}{\numberline {3}Parameterization and Terminology Glossary}{5}{chapter.3}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
@@ -29,7 +29,10 @@
 \@writefile{toc}{\contentsline {section}{\numberline {4.3}Results}{8}{section.4.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}Gate decision}{8}{subsection.4.3.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Moment accuracy}{8}{subsection.4.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.3}Auxiliary check highlights}{8}{subsection.4.3.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Experiment 1A: isolated-pair Monte Carlo moments versus exact theory. Residuals are centered at zero with magnitude $\sim 10^{-2}$, matching the preregistered precision gate.}}{9}{figure.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:1a-moments}{{4.1}{9}{Experiment 1A: isolated-pair Monte Carlo moments versus exact theory. Residuals are centered at zero with magnitude $\sim 10^{-2}$, matching the preregistered precision gate}{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.3}Auxiliary check highlights}{9}{subsection.4.3.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3.4}Interpretation of 1A}{9}{subsection.4.3.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {chapter}{\numberline {5}Experiment 1B: Discovery Atlas}{10}{chapter.5}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
@@ -46,37 +49,54 @@
 \@writefile{toc}{\contentsline {section}{\numberline {6.1}Global label histogram}{12}{section.6.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {6.2}Synthetic vs.\ real activations}{12}{section.6.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {6.3}Reference stratum deep dive}{12}{section.6.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6.4}Exact moment validation inside 1B forward pass}{13}{section.6.4}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {6.1}{\ignorespaces Exact vs.\ empirical logit moment residuals across 1B raw records. Horizontal line at zero indicates perfect theory match.}}{13}{figure.caption.2}\protected@file@percent }
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{fig:residuals}{{6.1}{13}{Exact vs.\ empirical logit moment residuals across 1B raw records. Horizontal line at zero indicates perfect theory match}{figure.caption.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.5}Phase-map visualization}{13}{section.6.5}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {6.2}{\ignorespaces Region-style empirical atlas for the reference stratum. Dashed curves trace interpolated median $H_{\mathrm  {norm}}$ and self-mass fields; colored dots are measured cells with preregistered labels.}}{14}{figure.caption.3}\protected@file@percent }
-\newlabel{fig:regions}{{6.2}{14}{Region-style empirical atlas for the reference stratum. Dashed curves trace interpolated median $H_{\mathrm {norm}}$ and self-mass fields; colored dots are measured cells with preregistered labels}{figure.caption.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6.3}{\ignorespaces Interpolated normalized row-entropy surface over $(\log _2 s,\alpha )$.}}{15}{figure.caption.4}\protected@file@percent }
-\newlabel{fig:surface}{{6.3}{15}{Interpolated normalized row-entropy surface over $(\log _2 s,\alpha )$}{figure.caption.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6.4}{\ignorespaces Nearest-measured-cell label assignment on the coefficient grid.}}{15}{figure.caption.5}\protected@file@percent }
-\newlabel{fig:mosaic}{{6.4}{15}{Nearest-measured-cell label assignment on the coefficient grid}{figure.caption.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6.5}{\ignorespaces Original turbo-colormap scatter from \texttt  {exp1b/run.py} analyze.}}{16}{figure.caption.6}\protected@file@percent }
-\newlabel{fig:atlas-ref}{{6.5}{16}{Original turbo-colormap scatter from \texttt {exp1b/run.py} analyze}{figure.caption.6}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.6}Label stability under threshold perturbation}{16}{section.6.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {chapter}{\numberline {7}Synthesis and Scientific Reading}{17}{chapter.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.4}Logit moments inside the 1B forward pass}{13}{section.6.4}\protected@file@percent }
+\newlabel{sec:1b-moments}{{6.4}{13}{Logit moments inside the 1B forward pass}{section.6.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{What is stored.}{13}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The retracted statistic.}{13}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Full-data calibration (this report).}{13}{section*.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.1}{\ignorespaces 1B single-draw diagnostics. Left: mean is approximately unbiased with heteroscedastic scatter. Right: empirical across-pair variance vs.\ mean pairwise conditional variance---mismatched estimands, discrete $s$-bands, large residuals. Color is $\log _2 s$.}}{14}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:1b-naive}{{6.1}{14}{1B single-draw diagnostics. Left: mean is approximately unbiased with heteroscedastic scatter. Right: empirical across-pair variance vs.\ mean pairwise conditional variance---mismatched estimands, discrete $s$-bands, large residuals. Color is $\log _2 s$}{figure.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.2}{\ignorespaces Same empirical variance after adding $\mathrm  {Var}_{ij}(\mathbb  {E}[\ell _{ij}\mid x])$. Residuals are closer to centered by scale; remaining error is heteroscedastic single-draw noise, not 1A-style $10^{-2}$ Monte Carlo error.}}{15}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:1b-corrected}{{6.2}{15}{Same empirical variance after adding $\mathrm {Var}_{ij}(\mathbb {E}[\ell _{ij}\mid x])$. Residuals are closer to centered by scale; remaining error is heteroscedastic single-draw noise, not 1A-style $10^{-2}$ Monte Carlo error}{figure.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.3}{\ignorespaces Variance residuals boxed by $s$. Naive pairwise residuals fan out and shift with scale; the total-variance correction recenters medians. Whiskers at $s=4$ still span $\mathcal  {O}(10^2)$.}}{15}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:1b-scale}{{6.3}{15}{Variance residuals boxed by $s$. Naive pairwise residuals fan out and shift with scale; the total-variance correction recenters medians. Whiskers at $s=4$ still span $\mathcal {O}(10^2)$}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.5}Phase-map visualization}{15}{section.6.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.4}{\ignorespaces Region-style empirical atlas for the reference stratum. Dashed curves trace interpolated median $H_{\mathrm  {norm}}$ and self-mass fields; colored dots are measured cells with preregistered labels.}}{16}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:regions}{{6.4}{16}{Region-style empirical atlas for the reference stratum. Dashed curves trace interpolated median $H_{\mathrm {norm}}$ and self-mass fields; colored dots are measured cells with preregistered labels}{figure.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.5}{\ignorespaces Interpolated normalized row-entropy surface over $(\log _2 s,\alpha )$.}}{17}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:surface}{{6.5}{17}{Interpolated normalized row-entropy surface over $(\log _2 s,\alpha )$}{figure.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.6}{\ignorespaces Nearest-measured-cell label assignment on the coefficient grid.}}{17}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:mosaic}{{6.6}{17}{Nearest-measured-cell label assignment on the coefficient grid}{figure.caption.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.7}{\ignorespaces Original turbo-colormap scatter from \texttt  {exp1b/run.py} analyze.}}{18}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:atlas-ref}{{6.7}{18}{Original turbo-colormap scatter from \texttt {exp1b/run.py} analyze}{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.6}Label stability under threshold perturbation}{18}{section.6.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {7}Experiment 1C: Adaptive Refinement and Transfer}{19}{chapter.7}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {7.1}What 1A established}{17}{section.7.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7.2}What 1B established}{17}{section.7.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7.3}What is \emph  {not} yet established}{17}{section.7.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {chapter}{\numberline {8}Limitations and Provenance}{18}{chapter.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7.1}Purpose}{19}{section.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7.2}Compute that was merged}{19}{section.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7.3}Surrogate held-out metrics}{19}{section.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7.4}Adaptive-cell labels}{20}{section.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7.5}Why the portfolio did not freeze}{20}{section.7.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7.6}Label sensitivity}{20}{section.7.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {8}Synthesis and Scientific Reading}{21}{chapter.8}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{ch:limitations}{{8}{18}{Limitations and Provenance}{chapter.8}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {9}Recommended Next Steps}{19}{chapter.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8.1}What 1A established}{21}{section.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8.2}What 1B established}{21}{section.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8.3}What 1C established}{21}{section.8.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8.4}What is \emph  {not} yet established}{21}{section.8.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {9}Limitations and Provenance}{23}{chapter.9}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {chapter}{\numberline {A}Holm--Bonferroni reminder}{20}{appendix.A}\protected@file@percent }
+\newlabel{ch:limitations}{{9}{23}{Limitations and Provenance}{chapter.9}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {10}Recommended Next Steps}{24}{chapter.10}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {chapter}{\numberline {B}Bootstrap procedure in 1B}{21}{appendix.B}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {A}Holm--Bonferroni reminder}{25}{appendix.A}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\gdef \@abspage@last{22}
+\@writefile{toc}{\contentsline {chapter}{\numberline {B}Bootstrap procedure in 1B}{26}{appendix.B}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\gdef \@abspage@last{27}

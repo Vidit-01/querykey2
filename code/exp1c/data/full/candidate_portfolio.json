@@ -1,0 +1,106 @@
+{
+  "applied_rule": "majority_reference_geometry",
+  "applied_rule_description": "strict majority of reference-geometry strata are screened",
+  "frozen": true,
+  "n_candidates": 32,
+  "points": [
+    {
+      "alpha": -0.6528815444123333,
+      "beta": 0.34207819207754836,
+      "gamma": 0.6758166907310905,
+      "n_reference_screened": 5,
+      "n_reference_strata": 8,
+      "n_screened": 5,
+      "n_strata": 16,
+      "phi": 1.1022248416413882,
+      "s": 0.8012834594948179
+    },
+    {
+      "alpha": 0.8056131116834464,
+      "beta": 0.025299570188881983,
+      "gamma": 0.591901550962635,
+      "n_reference_screened": 5,
+      "n_reference_strata": 8,
+      "n_screened": 7,
+      "n_strata": 16,
+      "phi": 1.5280794594810434,
+      "s": 0.7760063090632838
+    },
+    {
+      "alpha": 0.8434682028139022,
+      "beta": 0.2485089930842806,
+      "gamma": 0.476240140263421,
+      "n_reference_screened": 5,
+      "n_reference_strata": 8,
+      "n_screened": 7,
+      "n_strata": 16,
+      "phi": 1.0898498345145131,
+      "s": 0.7765506149154282
+    },
+    {
+      "alpha": 0.9070655234868619,
+      "beta": 0.2749352339736811,
+      "gamma": 0.31881460634880343,
+      "n_reference_screened": 5,
+      "n_reference_strata": 8,
+      "n_screened": 7,
+      "n_strata": 16,
+      "phi": 0.8591661838873513,
+      "s": 0.7829870836357166
+    },
+    {
+      "alpha": 0.9270322750844153,
+      "beta": 0.12209755682490493,
+      "gamma": 0.3545466789707697,
+      "n_reference_screened": 5,
+      "n_reference_strata": 8,
+      "n_screened": 7,
+      "n_strata": 16,
+      "phi": 1.2391400332390357,
+      "s": 0.7753745123352256
+    },
+    {
+      "alpha": 0.9502378845373709,
+      "beta": 0.16937164807324598,
+      "gamma": 0.26145976290606304,
+      "n_reference_screened": 5,
+      "n_reference_strata": 8,
+      "n_screened": 7,
+      "n_strata": 16,
+      "phi": 0.9959745856245118,
+      "s": 0.7728813311193876
+    },
+    {
+      "alpha": 0.9696061649413692,
+      "beta": 0.24278242833164368,
+      "gamma": 0.030341018458196867,
+      "n_reference_screened": 5,
+      "n_reference_strata": 8,
+      "n_screened": 9,
+      "n_strata": 16,
+      "phi": 0.12432747723265479,
+      "s": 0.7762072335685977
+    },
+    {
+      "alpha": 0.9936814317362466,
+      "beta": 0.10570592300599788,
+      "gamma": 0.03772890223758407,
+      "n_reference_screened": 5,
+      "n_reference_strata": 8,
+      "n_screened": 8,
+      "n_strata": 16,
+      "phi": 0.34282916765687443,
+      "s": 0.7734186389600484
+    }
+  ],
+  "replication_strict": false,
+  "requested_heads": 8,
+  "requested_rule": "all_replicated_strata",
+  "rule_counts": {
+    "all_replicated_strata": 0,
+    "any_reference_geometry": 117,
+    "majority_all_strata": 3,
+    "majority_reference_geometry": 32
+  },
+  "selection_rule": "majority_reference_geometry; even coverage after sorting by alpha then phi; training outcomes unseen"
+}

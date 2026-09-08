@@ -1,0 +1,10 @@
+{
+  "label_counts": {
+    "boundary_uncertain": 613,
+    "diffuse": 793,
+    "screened_candidate": 514
+  },
+  "raw_rows": 122880,
+  "stratified_cells": 1920,
+  "unique_coefficient_cells": 240
+}

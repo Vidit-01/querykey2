@@ -1,0 +1,18 @@
+{
+  "balanced_accuracy": 0.9870106069092508,
+  "boundary_definition": "top quartile of held-out predictive uncertainty",
+  "boundary_error": 0.03488372093023256,
+  "classes": [
+    "boundary_uncertain",
+    "concentrated",
+    "diffuse",
+    "gradient_starved",
+    "screened_candidate",
+    "self_locked"
+  ],
+  "expected_calibration_error": 0.015286490013641085,
+  "held_out_fraction": 0.2,
+  "multiclass_log_loss": 0.03549380015503073,
+  "test_rows": 2752,
+  "train_rows": 10984
+}

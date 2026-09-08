@@ -1,0 +1,6 @@
+{
+  "derived_from": "all_quick_rows",
+  "jacobian_floor": 0.09227267801761627,
+  "rank_floor": 0.31425748724967184,
+  "update_floor": 6.23383382598167e-05
+}

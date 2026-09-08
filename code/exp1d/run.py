@@ -35,6 +35,11 @@ from common.io_utils import (  # noqa: E402
 )
 from common.metrics import cluster_bootstrap_ci  # noqa: E402
 from common.models import DecoderLM, ModelConfig  # noqa: E402
+from common.portfolio import (  # noqa: E402
+    coefficient_key,
+    infer_label_rule,
+    labeled_representatives,
+)
 
 
 STRATUM_COUNTS = {
@@ -55,41 +60,73 @@ def read_summary(path: Path) -> list[dict]:
     return rows
 
 
-def freeze_selection(summary: Path, output: Path, *, quick: bool, seed: int) -> list[dict]:
+def default_discovery_summary(preset: str) -> Path:
+    return Path(__file__).parents[1] / "exp1b" / "data" / preset / "atlas_summary.csv"
+
+
+def atlas_tag(path: Path, fallback: str) -> str:
+    parts = {part.lower() for part in path.parts}
+    if "exp1b" in parts:
+        return "exp1b"
+    if "exp1c" in parts:
+        return "exp1c"
+    return fallback
+
+
+def freeze_selection(
+    summary: Path,
+    output: Path,
+    *,
+    quick: bool,
+    seed: int,
+    discovery_summary: Path | None = None,
+) -> list[dict]:
     rows = read_summary(summary)
-    grouped: dict[tuple, list[dict]] = defaultdict(list)
-    for row in rows:
-        key = tuple(round(row[name], 10) for name in ("s", "alpha", "beta", "gamma"))
-        grouped[key].append(row)
-    by_label: dict[str, list[dict]] = defaultdict(list)
-    precedence = ["self_locked", "concentrated", "diffuse", "gradient_starved"]
-    for values in grouped.values():
-        labels = {row["label"] for row in values}
-        label = next((name for name in precedence if name in labels), None)
-        if label is None:
-            label = (
-                "screened_candidate"
-                if labels == {"screened_candidate"}
-                else "boundary_uncertain"
-            )
-        representative = dict(values[0])
-        representative["label"] = label
-        by_label[label].append(representative)
+    primary_atlas = atlas_tag(summary, "primary")
+    primary_rule = infer_label_rule(rows)
+    by_label = labeled_representatives(rows, primary_rule, atlas=primary_atlas)
+    discovery_rule = None
+    discovery_used = None
+    if discovery_summary is not None and discovery_summary.exists():
+        discovery_rows = read_summary(discovery_summary)
+        discovery_rule = infer_label_rule(discovery_rows)
+        fill = labeled_representatives(
+            discovery_rows,
+            discovery_rule,
+            atlas=atlas_tag(discovery_summary, "discovery"),
+        )
+        discovery_used = str(discovery_summary)
+        primary_keys = {coefficient_key(row) for values in by_label.values() for row in values}
+        for label, candidates in fill.items():
+            extra = [row for row in candidates if coefficient_key(row) not in primary_keys]
+            by_label[label].extend(extra)
     rng = np.random.default_rng(seed)
     selected = []
+    stratum_sources: dict[str, dict[str, int]] = {}
     for label, full_count in STRATUM_COUNTS.items():
-        candidates = by_label.get(label, [])
+        candidates = list(by_label.get(label, []))
         if not quick and len(candidates) < full_count:
             raise RuntimeError(
                 f"cannot preregister {full_count} {label} cells; only {len(candidates)} available"
             )
-        rng.shuffle(candidates)
-        count = min(len(candidates), 1 if quick else full_count)
-        for row in candidates[:count]:
+        primary = [row for row in candidates if row.get("atlas") == primary_atlas]
+        filled = [row for row in candidates if row.get("atlas") != primary_atlas]
+        rng.shuffle(primary)
+        rng.shuffle(filled)
+        ordered = primary + filled
+        count = min(len(ordered), 1 if quick else full_count)
+        chosen = ordered[:count]
+        stratum_sources[label] = {
+            "primary": sum(row.get("atlas") == primary_atlas for row in chosen),
+            "discovery": sum(row.get("atlas") != primary_atlas for row in chosen),
+        }
+        for row in chosen:
             selected.append(
                 {
                     "point_id": len(selected),
                     "stratum": label,
+                    "atlas": row.get("atlas"),
+                    "label_rule": row.get("label_rule"),
                     **{name: row[name] for name in ("s", "alpha", "beta", "gamma", "phi")},
                 }
             )
@@ -106,8 +143,12 @@ def freeze_selection(summary: Path, output: Path, *, quick: bool, seed: int) -> 
     payload = {
         "frozen_before_training": True,
         "source": str(summary),
+        "discovery_source": discovery_used,
+        "primary_label_rule": primary_rule,
+        "discovery_label_rule": discovery_rule,
         "selection_seed": seed,
         "requested_counts": STRATUM_COUNTS,
+        "stratum_sources": stratum_sources,
         "points": selected,
     }
     write_json(output / "selected_points.json", payload)
@@ -299,6 +340,11 @@ def main() -> None:
         "--atlas-summary",
         type=Path,
     )
+    parser.add_argument(
+        "--discovery-summary",
+        type=Path,
+        help="1B atlas used to fill pathology strata that 1C adaptive cells do not contain.",
+    )
     parser.add_argument("--output", type=Path)
     parser.add_argument("--tinystories-file", type=Path)
     parser.add_argument("--include-text", action="store_true")
@@ -319,14 +365,25 @@ def main() -> None:
             / args.preset
             / "atlas_summary.csv"
         )
+    if args.discovery_summary is None:
+        args.discovery_summary = default_discovery_summary(args.preset)
     output = ensure_output(args.output or Path(__file__).parent / "data" / args.preset)
     create_manifest(
-        output, experiment="exp1d", arguments=vars(args), inputs=[args.atlas_summary]
+        output,
+        experiment="exp1d",
+        arguments=vars(args),
+        inputs=[args.atlas_summary, args.discovery_summary],
     )
     quick = args.preset == "quick"
     selection_path = output / "selected_points.json"
     if args.mode in {"select", "all"}:
-        points = freeze_selection(args.atlas_summary, output, quick=quick, seed=args.seed)
+        points = freeze_selection(
+            args.atlas_summary,
+            output,
+            quick=quick,
+            seed=args.seed,
+            discovery_summary=args.discovery_summary,
+        )
     else:
         points = json.loads(selection_path.read_text(encoding="utf-8"))["points"]
     include_text = args.include_text or not quick

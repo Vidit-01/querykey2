@@ -39,6 +39,15 @@ from common.io_utils import (  # noqa: E402
     read_jsonl,
     write_json,
 )
+from common.portfolio import (  # noqa: E402
+    FREEZE_RULES,
+    coefficient_key,
+    freeze_rule_counts,
+    group_by_coefficient,
+    passes_freeze_rule,
+    point_payload,
+    select_even_coverage,
+)
 from exp1b.run import analyze as analyze_atlas  # noqa: E402
 from exp1b.run import rows_for_cell  # noqa: E402
 
@@ -321,37 +330,56 @@ def resolve_device(args: argparse.Namespace) -> torch.device:
 
 def freeze_portfolio(summary_path: Path, output: Path, heads: int = 8) -> None:
     rows = read_csv(summary_path)
-    grouped: dict[tuple, list[dict]] = {}
-    for row in rows:
-        key = tuple(round(float(row[name]), 10) for name in ("s", "alpha", "beta", "gamma"))
-        grouped.setdefault(key, []).append(row)
-    candidates = [
-        values[0]
-        for values in grouped.values()
-        if all(row["label"] == "screened_candidate" for row in values)
-    ]
-    candidates.sort(key=lambda row: (float(row["alpha"]), float(row["phi"])))
-    if len(candidates) < heads:
+    grouped = group_by_coefficient(rows)
+    rule_counts = freeze_rule_counts(grouped)
+    applied_rule = None
+    candidates: list[dict] = []
+    grouped_for_points: dict[tuple, list[dict]] = {}
+    for name, _description in FREEZE_RULES:
+        matching = [
+            (key, values)
+            for key, values in grouped.items()
+            if passes_freeze_rule(values, name)
+        ]
+        if len(matching) >= heads:
+            applied_rule = name
+            grouped_for_points = {key: values for key, values in matching}
+            candidates = [values[0] for _key, values in matching]
+            break
+    if applied_rule is None:
         write_json(
             output / "candidate_portfolio.json",
             {
                 "frozen": False,
-                "reason": f"need {heads} replicated screened candidates; found {len(candidates)}",
+                "requested_heads": heads,
+                "requested_rule": FREEZE_RULES[0][0],
+                "rule_counts": rule_counts,
+                "reason": (
+                    f"need {heads} screened candidates under any fallback freeze rule; "
+                    f"counts={rule_counts}"
+                ),
             },
         )
         return
-    selected = [candidates[index] for index in np.linspace(0, len(candidates) - 1, heads, dtype=int)]
+    selected_rows = select_even_coverage(candidates, heads)
     write_json(
         output / "candidate_portfolio.json",
         {
             "frozen": True,
-            "selection_rule": "even coverage after sorting by alpha then phi; training outcomes unseen",
+            "requested_heads": heads,
+            "requested_rule": FREEZE_RULES[0][0],
+            "applied_rule": applied_rule,
+            "applied_rule_description": dict(FREEZE_RULES)[applied_rule],
+            "replication_strict": applied_rule == FREEZE_RULES[0][0],
+            "n_candidates": len(candidates),
+            "rule_counts": rule_counts,
+            "selection_rule": (
+                f"{applied_rule}; even coverage after sorting by alpha then phi; "
+                "training outcomes unseen"
+            ),
             "points": [
-                {
-                    key: float(row[key])
-                    for key in ("s", "alpha", "beta", "gamma", "phi")
-                }
-                for row in selected
+                point_payload(row, grouped_for_points[coefficient_key(row)])
+                for row in selected_rows
             ],
         },
     )
@@ -360,7 +388,11 @@ def freeze_portfolio(summary_path: Path, output: Path, heads: int = 8) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--preset", choices=["quick", "full"], default="quick")
-    parser.add_argument("--mode", choices=["propose", "run", "analyze", "all"], default="all")
+    parser.add_argument(
+        "--mode",
+        choices=["propose", "run", "analyze", "freeze", "all"],
+        default="all",
+    )
     parser.add_argument(
         "--discovery-summary",
         type=Path,
@@ -390,7 +422,7 @@ def main() -> None:
     )
     if args.discovery_summary is None:
         args.discovery_summary = default_discovery_summary(args.preset)
-    if not args.discovery_summary.exists():
+    if args.mode in {"propose", "all"} and not args.discovery_summary.exists():
         raise FileNotFoundError(
             f"discovery summary not found: {args.discovery_summary} "
             "(attach 1B atlas_summary.csv as a Kaggle dataset or set KAGGLE_DISCOVERY_SUMMARY)"
@@ -473,6 +505,9 @@ def main() -> None:
             if args.distributed and not is_main_process():
                 return
             analyze_atlas(output, args.bootstrap_draws)
+        if args.mode in {"analyze", "freeze", "all"}:
+            if args.distributed and not is_main_process():
+                return
             freeze_portfolio(output / "atlas_summary.csv", output)
             print(f"Experiment 1C results written to {output}")
     finally:

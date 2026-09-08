@@ -1,0 +1,614 @@
+{
+  "exp1a": {
+    "mean": {
+      "n": 864,
+      "mean_residual": -3.4e-05,
+      "std_residual": 0.005799,
+      "rmse": 0.005799,
+      "mae": 0.004569,
+      "median_abs_relative": 0.007033,
+      "p95_abs_relative": 7967.140969,
+      "ols_intercept": -3.4e-05,
+      "ols_slope": 0.999903,
+      "ols_r2": 0.999988
+    },
+    "variance": {
+      "n": 864,
+      "mean_residual": -0.000297,
+      "std_residual": 0.010579,
+      "rmse": 0.010583,
+      "mae": 0.00827,
+      "median_abs_relative": 0.006197,
+      "p95_abs_relative": 0.018199,
+      "ols_intercept": 0.002381,
+      "ols_slope": 0.99761,
+      "ols_r2": 0.997534
+    },
+    "holm_mean_rejected": 0,
+    "holm_variance_rejected": 0,
+    "n_configs": 864
+  },
+  "exp1b": {
+    "raw_records": {
+      "mean": {
+        "n": 879104,
+        "mean_residual": 0.004197,
+        "std_residual": 1.767419,
+        "rmse": 1.767424,
+        "mae": 0.56935,
+        "median_abs_relative": 0.046808,
+        "p95_abs_relative": 0.847711,
+        "ols_intercept": 0.004197,
+        "ols_slope": 1.001218,
+        "ols_r2": 0.788247
+      },
+      "variance_pairwise": {
+        "n": 879104,
+        "mean_residual": 0.955964,
+        "std_residual": 20.447113,
+        "rmse": 20.469448,
+        "mae": 6.596309,
+        "median_abs_relative": 0.166639,
+        "p95_abs_relative": 0.533542,
+        "ols_intercept": 0.144156,
+        "ols_slope": 1.026138,
+        "ols_r2": 0.919694
+      },
+      "variance_total": {
+        "n": 879104,
+        "mean_residual": -0.889357,
+        "std_residual": 18.26173,
+        "rmse": 18.283373,
+        "mae": 5.851187,
+        "median_abs_relative": 0.136842,
+        "p95_abs_relative": 0.456273,
+        "ols_intercept": -0.060365,
+        "ols_slope": 0.974806,
+        "ols_r2": 0.936092
+      }
+    },
+    "seed_averaged_cells": {
+      "mean": {
+        "n": 13736,
+        "mean_residual": 0.004197,
+        "std_residual": 0.207777,
+        "rmse": 0.207819,
+        "mae": 0.071139,
+        "median_abs_relative": 0.006361,
+        "p95_abs_relative": 0.105555,
+        "ols_intercept": 0.004197,
+        "ols_slope": 1.00095,
+        "ols_r2": 0.996257
+      },
+      "variance_pairwise": {
+        "n": 13736,
+        "mean_residual": 0.955964,
+        "std_residual": 16.102904,
+        "rmse": 16.131255,
+        "mae": 5.301141,
+        "median_abs_relative": 0.163028,
+        "p95_abs_relative": 0.457853,
+        "ols_intercept": 0.130618,
+        "ols_slope": 1.026574,
+        "ols_r2": 0.948903
+      },
+      "variance_total": {
+        "n": 13736,
+        "mean_residual": -0.889357,
+        "std_residual": 13.289138,
+        "rmse": 13.318865,
+        "mae": 4.200529,
+        "median_abs_relative": 0.080136,
+        "p95_abs_relative": 0.294908,
+        "ols_intercept": -0.066062,
+        "ols_slope": 0.974979,
+        "ols_r2": 0.965403
+      }
+    },
+    "note": "predicted_logit_variance is the mean pairwise conditional variance given tokens. empirical logit_variance is the across-pair sample variance of one realized logit matrix. variance_total adds Var_ij(E[ell_ij|x]) \u2248 (alpha s^2 sqrt(m))^2 Var(G_ij).",
+    "strata_vs_pairwise_variance": [
+      {
+        "stratum": "input_kind",
+        "value": "real_activation",
+        "n": 219776,
+        "mean_rmse": 0.12205164857956076,
+        "var_rmse": 20.727445094772985,
+        "var_mean_residual": 5.46011459836411,
+        "var_ols_slope": 1.1812288025760196,
+        "var_ols_r2": 0.9590190105731596
+      },
+      {
+        "stratum": "input_kind",
+        "value": "synthetic",
+        "n": 659328,
+        "mean_rmse": 2.0396284427193696,
+        "var_rmse": 20.382723704787463,
+        "var_mean_residual": -0.5454197578769835,
+        "var_ols_slope": 0.9775724157482659,
+        "var_ols_r2": 0.9137497797215376
+      },
+      {
+        "stratum": "mask",
+        "value": "causal",
+        "n": 439552,
+        "mean_rmse": 1.7710704090066147,
+        "var_rmse": 22.044342934035853,
+        "var_mean_residual": 1.6433161864670982,
+        "var_ols_slope": 1.0484964363482465,
+        "var_ols_r2": 0.9133457568501919
+      },
+      {
+        "stratum": "mask",
+        "value": "unmasked",
+        "n": 439552,
+        "mean_rmse": 1.7637698787898606,
+        "var_rmse": 18.762824231005176,
+        "var_mean_residual": 0.26861147589948176,
+        "var_ols_slope": 1.0035890757291834,
+        "var_ols_r2": 0.9278956186398071
+      },
+      {
+        "stratum": "correlation",
+        "value": "0.0",
+        "n": 219776,
+        "mean_rmse": 0.11197324790619713,
+        "var_rmse": 20.512469468929552,
+        "var_mean_residual": 5.365800068138079,
+        "var_ols_slope": 1.1785064854455887,
+        "var_ols_r2": 0.9594390125793565
+      },
+      {
+        "stratum": "correlation",
+        "value": "0.25",
+        "n": 219776,
+        "mean_rmse": 1.6265196052262085,
+        "var_rmse": 15.343475396411213,
+        "var_mean_residual": 0.9639832778618278,
+        "var_ols_slope": 1.0335074211346422,
+        "var_ols_r2": 0.9541512034977102
+      },
+      {
+        "stratum": "correlation",
+        "value": "0.5",
+        "n": 219776,
+        "mean_rmse": 3.1340307143704957,
+        "var_rmse": 24.29367481306752,
+        "var_mean_residual": -7.966042619630858,
+        "var_ols_slope": 0.7532809462013663,
+        "var_ols_r2": 0.9250662147084372
+      },
+      {
+        "stratum": "correlation",
+        "value": "real",
+        "n": 219776,
+        "mean_rmse": 0.12205164857956076,
+        "var_rmse": 20.727445094772985,
+        "var_mean_residual": 5.46011459836411,
+        "var_ols_slope": 1.1812288025760196,
+        "var_ols_r2": 0.9590190105731596
+      },
+      {
+        "stratum": "s",
+        "value": "0.25",
+        "n": 51712,
+        "mean_rmse": 0.03398280438693779,
+        "var_rmse": 0.0011579803502044473,
+        "var_mean_residual": 0.00014240426948712375,
+        "var_ols_slope": -0.3702949028575523,
+        "var_ols_r2": 0.0038854260276611763
+      },
+      {
+        "stratum": "s",
+        "value": "0.2973",
+        "n": 51712,
+        "mean_rmse": 0.028142314343065286,
+        "var_rmse": 0.002199730335076905,
+        "var_mean_residual": 0.00023747982577063313,
+        "var_ols_slope": -0.6401607260508624,
+        "var_ols_r2": 0.013116020370646075
+      },
+      {
+        "stratum": "s",
+        "value": "0.3536",
+        "n": 51712,
+        "mean_rmse": 0.04045885731363753,
+        "var_rmse": 0.004431504995084313,
+        "var_mean_residual": 0.00048625663575786336,
+        "var_ols_slope": -0.7223664574480305,
+        "var_ols_r2": 0.016535495882670226
+      },
+      {
+        "stratum": "s",
+        "value": "0.4204",
+        "n": 51712,
+        "mean_rmse": 0.05605527395986781,
+        "var_rmse": 0.008877284980090081,
+        "var_mean_residual": 0.0009357343650582053,
+        "var_ols_slope": -0.6864465848176678,
+        "var_ols_r2": 0.014831554844626837
+      },
+      {
+        "stratum": "s",
+        "value": "0.5",
+        "n": 51712,
+        "mean_rmse": 0.07917163373856297,
+        "var_rmse": 0.01782449019211221,
+        "var_mean_residual": 0.001859935382958836,
+        "var_ols_slope": -0.6998059668071029,
+        "var_ols_r2": 0.015293889660323967
+      },
+      {
+        "stratum": "s",
+        "value": "0.5946",
+        "n": 51712,
+        "mean_rmse": 0.11387791174430796,
+        "var_rmse": 0.035505986254790595,
+        "var_mean_residual": 0.003882201198871146,
+        "var_ols_slope": -0.6975054251678044,
+        "var_ols_r2": 0.015340966904642594
+      },
+      {
+        "stratum": "s",
+        "value": "0.7071",
+        "n": 51712,
+        "mean_rmse": 0.16119866029049024,
+        "var_rmse": 0.0711065391667865,
+        "var_mean_residual": 0.008076022088062018,
+        "var_ols_slope": -0.6809348001540213,
+        "var_ols_r2": 0.014578719381529104
+      },
+      {
+        "stratum": "s",
+        "value": "0.8409",
+        "n": 51712,
+        "mean_rmse": 0.23020347039909841,
+        "var_rmse": 0.1437832057879289,
+        "var_mean_residual": 0.017855666643803902,
+        "var_ols_slope": -0.6646365818258414,
+        "var_ols_r2": 0.013589256647142833
+      },
+      {
+        "stratum": "s",
+        "value": "1",
+        "n": 51712,
+        "mean_rmse": 0.3233137507916673,
+        "var_rmse": 0.28554539368742565,
+        "var_mean_residual": 0.03205289156954173,
+        "var_ols_slope": -0.6457370024086001,
+        "var_ols_r2": 0.012967701911064111
+      },
+      {
+        "stratum": "s",
+        "value": "1.189",
+        "n": 51712,
+        "mean_rmse": 0.45635851646607006,
+        "var_rmse": 0.565874013074894,
+        "var_mean_residual": 0.0617346273248757,
+        "var_ols_slope": -0.7193271523623287,
+        "var_ols_r2": 0.016475939747392476
+      },
+      {
+        "stratum": "s",
+        "value": "1.414",
+        "n": 51712,
+        "mean_rmse": 0.6369245512452579,
+        "var_rmse": 1.1300625840551752,
+        "var_mean_residual": 0.11975068762428173,
+        "var_ols_slope": -0.7067225107029135,
+        "var_ols_r2": 0.015930242948002604
+      },
+      {
+        "stratum": "s",
+        "value": "1.682",
+        "n": 51712,
+        "mean_rmse": 0.919089941936461,
+        "var_rmse": 2.2553317212334045,
+        "var_mean_residual": 0.237914364803398,
+        "var_ols_slope": -0.6717215275266915,
+        "var_ols_r2": 0.014423435381152983
+      },
+      {
+        "stratum": "s",
+        "value": "2",
+        "n": 51712,
+        "mean_rmse": 1.277121425693454,
+        "var_rmse": 4.561850550918015,
+        "var_mean_residual": 0.5208184793499289,
+        "var_ols_slope": -0.6948063162762612,
+        "var_ols_r2": 0.0151153345213213
+      },
+      {
+        "stratum": "s",
+        "value": "2.378",
+        "n": 51712,
+        "mean_rmse": 1.829697087807986,
+        "var_rmse": 9.059207318912629,
+        "var_mean_residual": 1.0551589179673406,
+        "var_ols_slope": -0.7170156720415986,
+        "var_ols_r2": 0.016377201801220598
+      },
+      {
+        "stratum": "s",
+        "value": "2.828",
+        "n": 51712,
+        "mean_rmse": 2.629304973859962,
+        "var_rmse": 18.32174655136967,
+        "var_mean_residual": 2.106607994968348,
+        "var_ols_slope": -0.709809787188834,
+        "var_ols_r2": 0.01565568239671089
+      },
+      {
+        "stratum": "s",
+        "value": "3.364",
+        "n": 51712,
+        "mean_rmse": 3.621630102178807,
+        "var_rmse": 36.468850037089254,
+        "var_mean_residual": 3.954215074382206,
+        "var_ols_slope": -0.6741825525910002,
+        "var_ols_r2": 0.01421493352610681
+      },
+      {
+        "stratum": "s",
+        "value": "4",
+        "n": 51712,
+        "mean_rmse": 5.1408140524039965,
+        "var_rmse": 73.12752887954656,
+        "var_mean_residual": 8.129656391716239,
+        "var_ols_slope": -0.6773958370909582,
+        "var_ols_r2": 0.0142831148835032
+      }
+    ],
+    "strata_vs_total_variance": [
+      {
+        "stratum": "input_kind",
+        "value": "real_activation",
+        "n": 219776,
+        "mean_rmse": 0.12205164857956076,
+        "var_rmse": 14.991278988847297,
+        "var_mean_residual": 3.11648247814699,
+        "var_ols_slope": 1.1017961498313928,
+        "var_ols_r2": 0.974134361640671
+      },
+      {
+        "stratum": "input_kind",
+        "value": "synthetic",
+        "n": 659328,
+        "mean_rmse": 2.0396284427193696,
+        "var_rmse": 19.256068130079893,
+        "var_mean_residual": -2.2246374228265906,
+        "var_ols_slope": 0.9329911976411817,
+        "var_ols_r2": 0.9283591930616518
+      },
+      {
+        "stratum": "mask",
+        "value": "causal",
+        "n": 439552,
+        "mean_rmse": 1.7710704090066147,
+        "var_rmse": 19.269694143860335,
+        "var_mean_residual": -0.20200509229938732,
+        "var_ols_slope": 0.9972863163317898,
+        "var_ols_r2": 0.9319296837336323
+      },
+      {
+        "stratum": "mask",
+        "value": "unmasked",
+        "n": 439552,
+        "mean_rmse": 1.7637698787898606,
+        "var_rmse": 17.240717798520446,
+        "var_mean_residual": -1.576709802867004,
+        "var_ols_slope": 0.9521364645359344,
+        "var_ols_r2": 0.9419871178398367
+      },
+      {
+        "stratum": "correlation",
+        "value": "0.0",
+        "n": 219776,
+        "mean_rmse": 0.11197324790619713,
+        "var_rmse": 15.030125459252282,
+        "var_mean_residual": 3.1445922606774865,
+        "var_ols_slope": 1.103452003164424,
+        "var_ols_r2": 0.9740774778551247
+      },
+      {
+        "stratum": "correlation",
+        "value": "0.25",
+        "n": 219776,
+        "mean_rmse": 1.6265196052262085,
+        "var_rmse": 14.030569532252999,
+        "var_mean_residual": -0.8459797481039162,
+        "var_ols_slope": 0.97724688078952,
+        "var_ols_r2": 0.9613320909906544
+      },
+      {
+        "stratum": "correlation",
+        "value": "0.5",
+        "n": 219776,
+        "mean_rmse": 3.1340307143704957,
+        "var_rmse": 26.26074878541329,
+        "var_mean_residual": -8.972524781053341,
+        "var_ols_slope": 0.7293393957790871,
+        "var_ols_r2": 0.9261309543790134
+      },
+      {
+        "stratum": "correlation",
+        "value": "real",
+        "n": 219776,
+        "mean_rmse": 0.12205164857956076,
+        "var_rmse": 14.991278988847297,
+        "var_mean_residual": 3.11648247814699,
+        "var_ols_slope": 1.1017961498313928,
+        "var_ols_r2": 0.974134361640671
+      },
+      {
+        "stratum": "s",
+        "value": "0.25",
+        "n": 51712,
+        "mean_rmse": 0.03398280438693779,
+        "var_rmse": 0.0010312117141004521,
+        "var_mean_residual": -9.693518576255203e-05,
+        "var_ols_slope": 1.4004914354848124,
+        "var_ols_r2": 0.17701255243893166
+      },
+      {
+        "stratum": "s",
+        "value": "0.2973",
+        "n": 51712,
+        "mean_rmse": 0.028142314343065286,
+        "var_rmse": 0.0019612287952772635,
+        "var_mean_residual": -0.00024119908472871836,
+        "var_ols_slope": 1.2361072420846912,
+        "var_ols_r2": 0.15575295814968793
+      },
+      {
+        "stratum": "s",
+        "value": "0.3536",
+        "n": 51712,
+        "mean_rmse": 0.04045885731363753,
+        "var_rmse": 0.0039605564099290235,
+        "var_mean_residual": -0.00047110118524084017,
+        "var_ols_slope": 1.199571530088846,
+        "var_ols_r2": 0.14522933636033986
+      },
+      {
+        "stratum": "s",
+        "value": "0.4204",
+        "n": 51712,
+        "mean_rmse": 0.05605527395986781,
+        "var_rmse": 0.007939488835044407,
+        "var_mean_residual": -0.0009789812769392008,
+        "var_ols_slope": 1.2179086526604395,
+        "var_ols_r2": 0.14869713102843451
+      },
+      {
+        "stratum": "s",
+        "value": "0.5",
+        "n": 51712,
+        "mean_rmse": 0.07917163373856297,
+        "var_rmse": 0.015928817927611763,
+        "var_mean_residual": -0.0019694959010359767,
+        "var_ols_slope": 1.2307498775453176,
+        "var_ols_r2": 0.1506614856234112
+      },
+      {
+        "stratum": "s",
+        "value": "0.5946",
+        "n": 51712,
+        "mean_rmse": 0.11387791174430796,
+        "var_rmse": 0.03174148675881568,
+        "var_mean_residual": -0.003776661369118478,
+        "var_ols_slope": 1.2087988457557153,
+        "var_ols_r2": 0.1467457726553295
+      },
+      {
+        "stratum": "s",
+        "value": "0.7071",
+        "n": 51712,
+        "mean_rmse": 0.16119866029049024,
+        "var_rmse": 0.06333437955722232,
+        "var_mean_residual": -0.007241703047917239,
+        "var_ols_slope": 1.2384377339893982,
+        "var_ols_r2": 0.15358777235514443
+      },
+      {
+        "stratum": "s",
+        "value": "0.8409",
+        "n": 51712,
+        "mean_rmse": 0.23020347039909841,
+        "var_rmse": 0.12777490506384853,
+        "var_mean_residual": -0.012779783628154595,
+        "var_ols_slope": 1.2605398268679544,
+        "var_ols_r2": 0.15568269267743395
+      },
+      {
+        "stratum": "s",
+        "value": "1",
+        "n": 51712,
+        "mean_rmse": 0.3233137507916673,
+        "var_rmse": 0.2544529341526704,
+        "var_mean_residual": -0.02921800897437527,
+        "var_ols_slope": 1.2563617129085394,
+        "var_ols_r2": 0.15634393227104026
+      },
+      {
+        "stratum": "s",
+        "value": "1.189",
+        "n": 51712,
+        "mean_rmse": 0.45635851646607006,
+        "var_rmse": 0.5062284409280307,
+        "var_mean_residual": -0.06080717376295828,
+        "var_ols_slope": 1.189055018459054,
+        "var_ols_r2": 0.14338415474019583
+      },
+      {
+        "stratum": "s",
+        "value": "1.414",
+        "n": 51712,
+        "mean_rmse": 0.6369245512452579,
+        "var_rmse": 1.0104248841891879,
+        "var_mean_residual": -0.12533291455138637,
+        "var_ols_slope": 1.2019169985745222,
+        "var_ols_r2": 0.14674843455939213
+      },
+      {
+        "stratum": "s",
+        "value": "1.682",
+        "n": 51712,
+        "mean_rmse": 0.919089941936461,
+        "var_rmse": 2.016587057933502,
+        "var_mean_residual": -0.2522528395479379,
+        "var_ols_slope": 1.2098856381521395,
+        "var_ols_r2": 0.14903174791098772
+      },
+      {
+        "stratum": "s",
+        "value": "2",
+        "n": 51712,
+        "mean_rmse": 1.277121425693454,
+        "var_rmse": 4.06515630592752,
+        "var_mean_residual": -0.4595159293527431,
+        "var_ols_slope": 1.2333841409476043,
+        "var_ols_r2": 0.15170047476301018
+      },
+      {
+        "stratum": "s",
+        "value": "2.378",
+        "n": 51712,
+        "mean_rmse": 1.829697087807986,
+        "var_rmse": 8.08642169472211,
+        "var_mean_residual": -0.905509899438003,
+        "var_ols_slope": 1.192698842283101,
+        "var_ols_r2": 0.14432579951752422
+      },
+      {
+        "stratum": "s",
+        "value": "2.828",
+        "n": 51712,
+        "mean_rmse": 2.629304973859962,
+        "var_rmse": 16.334777908806245,
+        "var_mean_residual": -1.8147296398423416,
+        "var_ols_slope": 1.2306194356032347,
+        "var_ols_r2": 0.1498771920409655
+      },
+      {
+        "stratum": "s",
+        "value": "3.364",
+        "n": 51712,
+        "mean_rmse": 3.621630102178807,
+        "var_rmse": 32.60248252892407,
+        "var_mean_residual": -3.888460195239169,
+        "var_ols_slope": 1.224062012765584,
+        "var_ols_r2": 0.14924391341963328
+      },
+      {
+        "stratum": "s",
+        "value": "4",
+        "n": 51712,
+        "mean_rmse": 5.1408140524039965,
+        "var_rmse": 65.31230057399195,
+        "var_mean_residual": -7.555694147526513,
+        "var_ols_slope": 1.2300002746292111,
+        "var_ols_r2": 0.1499851535879969
+      }
+    ]
+  }
+}

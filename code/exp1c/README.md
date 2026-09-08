@@ -6,7 +6,7 @@ This stage fits a probabilistic visualization surrogate on discovery-only labels
 
 **Preregistered full replication:** pass `--adaptive-cells 500 --seeds 256 --replicate-discovery-grid` to include all four transfer geometries and the original 1,717 discovery cells.
 
-The frozen `candidate_portfolio.json` uses replicated screened points without seeing training outcomes.
+The frozen `candidate_portfolio.json` tries the preregistered all-stratum intersection first, then falls back to majority screening on the reference geometry `(64,16,64)` if that intersection is empty. Training outcomes are not used. Re-freeze without remeasuring via `python code/exp1c/run.py --preset full --mode freeze`.
 
 ## Compute
 

@@ -2,7 +2,7 @@
 
 This stage freezes coefficient points before training, then trains the same one-block decoder on associative recall and a fixed TinyStories byte-token subset. Paired seeds reproduce data order and every non-query/key parameter. The primary statistic is early loss decrease per token; traces also record gradients, update-to-weight ratios, clipping, divergence, final loss, and slope.
 
-Full selection enforces 15 diffuse, 15 concentrated, 15 self-locked, 15 screened, 20 boundary/uncertain points, plus four canonical corners. It fails instead of silently shrinking a stratum.
+Full selection enforces 15 diffuse, 15 concentrated, 15 self-locked, 15 screened, 20 boundary/uncertain points, plus four canonical corners. It fails instead of silently shrinking a stratum. Adaptive 1C cells are labeled by majority vote on the reference geometry; concentrated and self-locked cells, which 1C did not sample, are filled from the 1B discovery atlas (`--discovery-summary`).
 
 ## Compute
 

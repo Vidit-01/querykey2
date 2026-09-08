@@ -1,0 +1,10 @@
+{
+  "label_counts": {
+    "boundary_uncertain": 6,
+    "gradient_starved": 1,
+    "screened_candidate": 5
+  },
+  "raw_rows": 24,
+  "stratified_cells": 12,
+  "unique_coefficient_cells": 3
+}

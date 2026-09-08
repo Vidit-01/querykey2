@@ -1,0 +1,35 @@
+{
+  "arguments": {
+    "adaptive_cells": null,
+    "bootstrap_draws": 2000,
+    "device": "cuda",
+    "discovery_summary": "C:\\Users\\Vidit\\Downloads\\workspace-01a04c37-230e-7873-8e71-0ed42ef593e9\\code\\exp1b\\data\\full\\atlas_summary.csv",
+    "distributed": false,
+    "distributed_rank": 0,
+    "distributed_world_size": 1,
+    "effective_num_shards": 1,
+    "effective_shard_index": 0,
+    "mode": "analyze",
+    "num_shards": 1,
+    "output": "code\\exp1c\\data\\full",
+    "preset": "full",
+    "replicate_discovery_grid": false,
+    "seed": 20260829,
+    "seeds": null,
+    "shard_index": 0
+  },
+  "created_unix": 1788700236.3825076,
+  "cuda_available": true,
+  "cuda_device": "NVIDIA GeForce RTX 2050",
+  "experiment": "exp1c",
+  "failures": [],
+  "git_commit": "f009a461a4c797a744274cb48a0bbc254f6a108b",
+  "inputs": {
+    "C:\\Users\\Vidit\\Downloads\\workspace-01a04c37-230e-7873-8e71-0ed42ef593e9\\code\\exp1b\\data\\full\\atlas_summary.csv": "1bda818d446c45312c9dd3da275668dd286b5a69422deacc649effac02a2de93"
+  },
+  "installed_packages": [],
+  "numpy": "2.3.4",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.0 (tags/v3.14.0:ebf955d, Oct  7 2025, 10:15:03) [MSC v.1944 64 bit (AMD64)]",
+  "torch": "2.11.0+cu128"
+}

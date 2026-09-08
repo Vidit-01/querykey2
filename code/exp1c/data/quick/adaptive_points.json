@@ -1,0 +1,38 @@
+[
+  {
+    "alpha": 0.008257834055281243,
+    "beta": 0.2577959352433899,
+    "gamma": 0.9661640978367502,
+    "phi": 1.3100468924388942,
+    "point_id": 0,
+    "s": 0.7267677026753212,
+    "surrogate_label": "screened_candidate",
+    "surrogate_theory_disagreement": true,
+    "theory_screen": "boundary_uncertain",
+    "uncertainty": 0.7160769527496732
+  },
+  {
+    "alpha": -0.43280106064294266,
+    "beta": 0.2864760939850036,
+    "gamma": 0.8547600186493512,
+    "phi": 1.2474082212057387,
+    "point_id": 1,
+    "s": 0.7412117302745328,
+    "surrogate_label": "gradient_starved",
+    "surrogate_theory_disagreement": true,
+    "theory_screen": "boundary_uncertain",
+    "uncertainty": 0.683069358163345
+  },
+  {
+    "alpha": -0.8801890427469463,
+    "beta": 0.28228105163793804,
+    "gamma": 0.38155557513210836,
+    "phi": 0.933844677720049,
+    "point_id": 2,
+    "s": 0.8860817692075489,
+    "surrogate_label": "boundary_uncertain",
+    "surrogate_theory_disagreement": false,
+    "theory_screen": "boundary_uncertain",
+    "uncertainty": 0.6764577345358054
+  }
+]

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.5.10)  6 SEP 2026 09:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.5.10)  6 SEP 2026 19:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -503,7 +503,7 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 30.
 (C:\Users\Vidit\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Overfull \hbox (52.5144pt too wide) in paragraph at lines 30--30
+Overfull \hbox (186.4588pt too wide) in paragraph at lines 30--30
  [][] 
  []
 
@@ -515,7 +515,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.38 ...ph {not} yet established}{15}{section.7.3}
+l.41 ...rrogate held-out metrics}{19}{section.7.3}
                                                   % [1
 
 ])
@@ -524,6 +524,12 @@ l.38 ...ph {not} yet established}{15}{section.7.3}
 
  [2]
 Chapter 1.
+
+Overfull \hbox (54.37314pt too wide) in paragraph at lines 41--42
+\OT1/cmr/m/n/10.95 strat-i-fied sum-maries. Held-out sur-ro-gate ac-cu-racy is 
+high, but no co-ef-fi-cient point is \OT1/cmtt/m/n/10.95 screened[]candidate
+ []
+
 [3
 
 
@@ -535,28 +541,28 @@ Chapter 2.
 Chapter 3.
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 90.
+(hyperref)                removing `math shift' on input line 107.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\alpha' on input line 90.
+(hyperref)                removing `\alpha' on input line 107.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\beta' on input line 90.
+(hyperref)                removing `\beta' on input line 107.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\gamma' on input line 90.
+(hyperref)                removing `\gamma' on input line 107.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 90.
+(hyperref)                removing `math shift' on input line 107.
 
 [5
 
 ]
-Overfull \hbox (28.04132pt too wide) detected at line 138
+Overfull \hbox (28.04132pt too wide) detected at line 155
 [] \OMS/cmsy/m/n/10.95 ^^_ [] ^^_ [] ^^_ [] ^^_ [] ^^_ []\OML/cmm/m/it/10.95 :
  []
 
@@ -566,123 +572,135 @@ Chapter 4.
 
 ]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <12> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 207.
- [8] [9]
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 224.
+<figures/fig_1a_moment_calibration.pdf, id=314, 744.16208pt x 611.88573pt>
+File: figures/fig_1a_moment_calibration.pdf Graphic file (type pdf)
+<use figures/fig_1a_moment_calibration.pdf>
+Package pdftex.def Info: figures/fig_1a_moment_calibration.pdf  used on input l
+ine 266.
+(pdftex.def)             Requested size: 443.9066pt x 364.99617pt.
+ [8] [9 <./figures/fig_1a_moment_calibration.pdf>]
 Chapter 5.
 [10
 
 ] [11]
 Chapter 6.
 
-Overfull \hbox (3.22623pt too wide) in paragraph at lines 344--352
+Overfull \hbox (3.22623pt too wide) in paragraph at lines 377--385
  [] 
  []
 
 
-Overfull \hbox (32.53064pt too wide) in paragraph at lines 361--372
+Overfull \hbox (32.53064pt too wide) in paragraph at lines 394--405
  [] 
  []
 
 [12
 
-]
-<../../code/exp1b/data/full/figures/exact_moment_residuals.png, id=305, 722.7pt
- x 289.08pt>
-File: ../../code/exp1b/data/full/figures/exact_moment_residuals.png Graphic fil
-e (type png)
-<use ../../code/exp1b/data/full/figures/exact_moment_residuals.png>
-Package pdftex.def Info: ../../code/exp1b/data/full/figures/exact_moment_residu
-als.png  used on input line 387.
-(pdftex.def)             Requested size: 430.31812pt x 172.12602pt.
-
-
-LaTeX Warning: Reference `fig:regions' on page 13 undefined on input line 394.
-
-<figures/fig_atlas_regions.pdf, id=307, 764.25528pt x 438.05757pt>
+] [13]
+<figures/fig_1b_moment_naive.pdf, id=431, 799.00546pt x 640.21558pt>
+File: figures/fig_1b_moment_naive.pdf Graphic file (type pdf)
+<use figures/fig_1b_moment_naive.pdf>
+Package pdftex.def Info: figures/fig_1b_moment_naive.pdf  used on input line 47
+0.
+(pdftex.def)             Requested size: 443.9066pt x 355.6853pt.
+<figures/fig_1b_variance_corrected.pdf, id=432, 784.16664pt x 327.02965pt>
+File: figures/fig_1b_variance_corrected.pdf Graphic file (type pdf)
+<use figures/fig_1b_variance_corrected.pdf>
+Package pdftex.def Info: figures/fig_1b_variance_corrected.pdf  used on input l
+ine 477.
+(pdftex.def)             Requested size: 443.9066pt x 185.12637pt.
+ [14 <./figures/fig_1b_moment_naive.pdf>]
+<figures/fig_1b_variance_by_scale.pdf, id=550, 787.4268pt x 308.7154pt>
+File: figures/fig_1b_variance_by_scale.pdf Graphic file (type pdf)
+<use figures/fig_1b_variance_by_scale.pdf>
+Package pdftex.def Info: figures/fig_1b_variance_by_scale.pdf  used on input li
+ne 484.
+(pdftex.def)             Requested size: 443.9066pt x 174.03824pt.
+<figures/fig_atlas_regions.pdf, id=552, 764.25528pt x 438.05757pt>
 File: figures/fig_atlas_regions.pdf Graphic file (type pdf)
 <use figures/fig_atlas_regions.pdf>
-Package pdftex.def Info: figures/fig_atlas_regions.pdf  used on input line 398.
+Package pdftex.def Info: figures/fig_atlas_regions.pdf  used on input line 497.
 
 (pdftex.def)             Requested size: 443.9066pt x 254.43451pt.
-[13 <../../code/exp1b/data/full/figures/exact_moment_residuals.png>]
-
-LaTeX Warning: Reference `fig:surface' on page 14 undefined on input line 403.
-
-<figures/fig_entropy_surface_3d.pdf, id=314, 460.91475pt x 382.6827pt>
+ [15 <./figures/fig_1b_variance_corrected.pdf> <./figures/fig_1b_variance_by_sc
+ale.pdf>]
+<figures/fig_entropy_surface_3d.pdf, id=698, 460.91475pt x 382.6827pt>
 File: figures/fig_entropy_surface_3d.pdf Graphic file (type pdf)
 <use figures/fig_entropy_surface_3d.pdf>
 Package pdftex.def Info: figures/fig_entropy_surface_3d.pdf  used on input line
- 407.
+ 506.
 (pdftex.def)             Requested size: 398.61395pt x 330.95758pt.
-[14 <./figures/fig_atlas_regions.pdf>]
-
-LaTeX Warning: Reference `fig:mosaic' on page 15 undefined on input line 412.
-
-<figures/fig_atlas_label_mosaic.pdf, id=425, 621.22935pt x 384.18417pt>
+ [16 <./figures/fig_atlas_regions.pdf>]
+<figures/fig_atlas_label_mosaic.pdf, id=810, 621.22935pt x 384.18417pt>
 File: figures/fig_atlas_label_mosaic.pdf Graphic file (type pdf)
 <use figures/fig_atlas_label_mosaic.pdf>
 Package pdftex.def Info: figures/fig_atlas_label_mosaic.pdf  used on input line
- 416.
+ 515.
 (pdftex.def)             Requested size: 416.72963pt x 257.71861pt.
 <../../code/exp1b/data/full/figures/atlas_d64_m16_n64_synthetic_unmasked_r0p25_
-phi0.000000.png, id=426, 448.074pt x 332.442pt>
+phi0.000000.png, id=811, 448.074pt x 332.442pt>
 File: ../../code/exp1b/data/full/figures/atlas_d64_m16_n64_synthetic_unmasked_r
 0p25_phi0.000000.png Graphic file (type png)
 <use ../../code/exp1b/data/full/figures/atlas_d64_m16_n64_synthetic_unmasked_r0
 p25_phi0.000000.png>
 Package pdftex.def Info: ../../code/exp1b/data/full/figures/atlas_d64_m16_n64_s
-ynthetic_unmasked_r0p25_phi0.000000.png  used on input line 425.
+ynthetic_unmasked_r0p25_phi0.000000.png  used on input line 524.
 (pdftex.def)             Requested size: 353.31439pt x 262.13931pt.
-[15 <./figures/fig_entropy_surface_3d.pdf> <./figures/fig_atlas_label_mosaic.pd
-f>]
-Overfull \hbox (56.53493pt too wide) in paragraph at lines 430--431
+ [17 <./figures/fig_entropy_surface_3d.pdf> <./figures/fig_atlas_label_mosaic.p
+df>]
+Overfull \hbox (56.53493pt too wide) in paragraph at lines 529--530
 []\OT1/cmr/m/n/10.95 Additional 71 fig-ures (vary-ing $\OML/cmm/m/it/10.95 ^^^$
 \OT1/cmr/m/n/10.95 , mask, $\OML/cmm/m/it/10.95 r$\OT1/cmr/m/n/10.95 , and real
  ac-ti-va-tions) are in \OT1/cmtt/m/n/10.95 code/exp1b/data/full/figures/\OT1/c
 mr/m/n/10.95 . 
  []
 
-[16 <../../code/exp1b/data/full/figures/atlas_d64_m16_n64_synthetic_unmasked_r0
+[18 <../../code/exp1b/data/full/figures/atlas_d64_m16_n64_synthetic_unmasked_r0
 p25_phi0.000000.png>]
 Chapter 7.
-[17
-
-]
-Chapter 8.
-[18
-
-]
-Chapter 9.
 [19
+
+] [20]
+Chapter 8.
+[21
+
+] [22]
+Chapter 9.
+
+Overfull \hbox (63.59993pt too wide) in paragraph at lines 691--692
+[]\OT1/cmr/m/n/10.95 1C: \OT1/cmtt/m/n/10.95 code/exp1c/data/full/analysis[]sum
+mary.json\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 atlas[]summary.csv\OT1/cmr/m/
+n/10.95 , \OT1/cmtt/m/n/10.95 candidate[]portfolio.json\OT1/cmr/m/n/10.95 ,
+ []
+
+[23
+
+]
+Chapter 10.
+[24
 
 ]
 Appendix A.
-[20
+[25
 
 ]
 Appendix B.
-[21
+[26
 
 ] (exp1ab_results_report.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `exp1ab_results_report.out' has not changed.
-(rerunfilecheck)             Checksum: 743F02F4B89B254AD9766859011AD7A7;7743.
+(rerunfilecheck)             Checksum: 042CA40B6C8BBA524CDD5C92AF0C7133;9195.
  ) 
 Here is how much of TeX's memory you used:
- 12927 strings out of 467871
- 205410 string characters out of 5418376
- 631857 words of memory out of 5000000
- 41560 multiletter control sequences out of 15000+600000
+ 12984 strings out of 467871
+ 206614 string characters out of 5418376
+ 635030 words of memory out of 5000000
+ 41593 multiletter control sequences out of 15000+600000
  640636 words of font info for 89 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,9n,79p,581b,630s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -708,9 +726,9 @@ ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb><C:/Users/V
 idit/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.p
 fb><C:/Users/Vidit/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/sy
 mbols/msbm10.pfb>
-Output written on exp1ab_results_report.pdf (22 pages, 810523 bytes).
+Output written on exp1ab_results_report.pdf (27 pages, 4766603 bytes).
 PDF statistics:
- 709 PDF objects out of 1000 (max. 8388607)
- 96 named destinations out of 1000 (max. 500000)
- 362 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1116 PDF objects out of 1200 (max. 8388607)
+ 120 named destinations out of 1000 (max. 500000)
+ 441 words of extra memory for PDF output out of 10000 (max. 10000000)
 
