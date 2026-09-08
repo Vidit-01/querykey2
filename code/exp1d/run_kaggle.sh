@@ -32,10 +32,47 @@ fi
 echo "output: ${OUTPUT}"
 cd "$CODE_ROOT"
 
-python "$RUN_PY" \
-  --preset "$PRESET" \
-  --mode "$MODE" \
-  --output "$OUTPUT" \
-  --shard-index "$SHARD_INDEX" \
-  --num-shards "$NUM_SHARDS" \
+COMMON_ARGS=(
+  --preset "$PRESET"
+  --output "$OUTPUT"
   "${EXTRA[@]}"
+)
+
+NUM_GPUS="$(python - <<'PY'
+import torch
+print(torch.cuda.device_count() if torch.cuda.is_available() else 0)
+PY
+)"
+echo "visible GPUs: ${NUM_GPUS}"
+
+run_python() {
+  python "$RUN_PY" "$@"
+}
+
+if [[ "$MODE" == "select" || "$MODE" == "all" ]]; then
+  run_python --mode select "${COMMON_ARGS[@]}"
+fi
+
+if [[ "$MODE" == "run" || "$MODE" == "all" ]]; then
+  if [[ "$NUM_GPUS" -gt 1 ]]; then
+    torchrun --standalone --nproc_per_node="$NUM_GPUS" "$RUN_PY" \
+      --mode run \
+      "${COMMON_ARGS[@]}" \
+      --shard-index "$SHARD_INDEX" \
+      --num-shards "$NUM_SHARDS" \
+      --distributed
+  else
+    run_python \
+      --mode run \
+      "${COMMON_ARGS[@]}" \
+      --shard-index "$SHARD_INDEX" \
+      --num-shards "$NUM_SHARDS"
+  fi
+fi
+
+if [[ "$MODE" == "analyze" || "$MODE" == "all" ]]; then
+  run_python \
+    --mode analyze \
+    "${COMMON_ARGS[@]}" \
+    --bootstrap-draws "${BOOTSTRAP_DRAWS:-10000}"
+fi

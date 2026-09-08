@@ -34,7 +34,8 @@ def init_distributed(backend: str | None = None) -> ShardPlan:
     if torch.cuda.is_available():
         local_rank = int(os.environ.get("LOCAL_RANK", "0"))
         torch.cuda.set_device(local_rank)
-        backend = backend or "nccl"
+        if backend is None:
+            backend = "nccl" if dist.is_nccl_available() else "gloo"
     else:
         local_rank = 0
         backend = backend or "gloo"

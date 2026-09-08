@@ -24,6 +24,14 @@ from common.data import (  # noqa: E402
     language_model_batch,
     load_token_cache,
 )
+from common.distributed import (  # noqa: E402
+    barrier,
+    cleanup,
+    current_shard_plan,
+    is_main_process,
+    launched_with_torchrun,
+    resolve_sharding,
+)
 from common.geometry import Coefficients, canonical_coefficients  # noqa: E402
 from common.io_utils import (  # noqa: E402
     append_jsonl,
@@ -73,6 +81,25 @@ def default_discovery_summary(preset: str) -> Path:
 
 def bundled_selected_points(preset: str) -> Path:
     return Path(__file__).parent / "data" / preset / "selected_points.json"
+
+
+def load_selected_points(output: Path, preset: str) -> list[dict]:
+    source = output / "selected_points.json"
+    if not source.exists():
+        source = bundled_selected_points(preset)
+    if not source.exists():
+        raise FileNotFoundError("selected_points.json not found; run --mode select first")
+    return json.loads(source.read_text(encoding="utf-8"))["points"]
+
+
+def resolve_device(args: argparse.Namespace) -> torch.device:
+    if args.distributed:
+        if not torch.cuda.is_available():
+            raise RuntimeError("distributed 1D run requires CUDA (use torchrun on GPU)")
+        plan = current_shard_plan()
+        assert plan is not None
+        return torch.device(f"cuda:{plan.local_rank}")
+    return torch.device(args.device)
 
 
 def atlas_tag(path: Path, fallback: str) -> str:
@@ -366,8 +393,21 @@ def main() -> None:
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     parser.add_argument("--shard-index", type=int, default=0)
     parser.add_argument("--num-shards", type=int, default=1)
+    parser.add_argument(
+        "--distributed",
+        action="store_true",
+        help="Use torchrun process-group sharding (one disjoint training job per GPU).",
+    )
     parser.add_argument("--bootstrap-draws", type=int, default=10000)
     args = parser.parse_args()
+    if args.distributed and not launched_with_torchrun():
+        raise RuntimeError(
+            "Pass --distributed only under torchrun, e.g. "
+            "torchrun --standalone --nproc_per_node=2 code/exp1d/run.py --distributed"
+        )
+    shard_index, num_shards, rank, world_size = resolve_sharding(
+        args.shard_index, args.num_shards, distributed=args.distributed
+    )
     if args.atlas_summary is None:
         args.atlas_summary = (
             Path(__file__).parents[1]
@@ -379,95 +419,131 @@ def main() -> None:
     if args.discovery_summary is None:
         args.discovery_summary = default_discovery_summary(args.preset)
     output = ensure_output(args.output or default_output(args.preset))
+    manifest_args = dict(vars(args))
+    manifest_args.update(
+        {
+            "effective_shard_index": shard_index,
+            "effective_num_shards": num_shards,
+            "distributed_rank": rank,
+            "distributed_world_size": world_size,
+        }
+    )
     create_manifest(
         output,
         experiment="exp1d",
-        arguments=vars(args),
+        arguments=manifest_args,
         inputs=[args.atlas_summary, args.discovery_summary],
     )
     quick = args.preset == "quick"
     selection_path = output / "selected_points.json"
-    if args.mode in {"select", "all"}:
-        points = freeze_selection(
-            args.atlas_summary,
-            output,
-            quick=quick,
-            seed=args.seed,
-            discovery_summary=args.discovery_summary,
+    try:
+        existing_selection = (
+            selection_path if selection_path.exists() else bundled_selected_points(args.preset)
         )
-    else:
-        source = selection_path if selection_path.exists() else bundled_selected_points(args.preset)
-        if source.exists():
-            points = json.loads(source.read_text(encoding="utf-8"))["points"]
-        else:
-            points = freeze_selection(
-                args.atlas_summary,
-                output,
-                quick=quick,
-                seed=args.seed,
-                discovery_summary=args.discovery_summary,
-            )
-    include_text = args.include_text or not quick
-    token_cache = None
-    if include_text:
-        cache_path = build_tinystories_cache(
-            output / "tinystories_train.uint8",
-            split="train",
-            local_path=args.tinystories_file,
-            max_stories=100 if quick else None,
-        )
-        token_cache = load_token_cache(cache_path)
-        write_json(
-            output / "data_hashes.json",
-            {"tinystories_train_uint8_sha256": file_sha256(cache_path)},
-        )
-    if args.mode in {"run", "all"}:
-        seeds = args.seeds or (1 if quick else 8)
-        steps = args.steps or (10 if quick else 2000)
-        batch_size = args.batch_size or (4 if quick else 64)
-        context_length = 32 if quick else 128
-        tasks = ["associative_recall"] + (["tinystories"] if include_text else [])
-        jobs = [
-            (point, task, args.seed + seed_index)
-            for point in points
-            for task in tasks
-            for seed_index in range(seeds)
-        ]
-        completed_rows = []
-        for path in output.glob("training_results_shard_*.jsonl"):
-            completed_rows.extend(read_jsonl(path))
-        completed = {
-            (row["point_id"], row["task"], row["paired_seed"])
-            for row in completed_rows
-        }
-        results_path = output / f"training_results_shard_{args.shard_index:04d}.jsonl"
-        for position, (point, task, paired_seed) in enumerate(
-            jobs[args.shard_index :: args.num_shards]
-        ):
-            key = (point["point_id"], task, paired_seed)
-            if key in completed:
-                continue
-            try:
-                result = train_one(
-                    point,
-                    task=task,
-                    paired_seed=paired_seed,
-                    steps=steps,
-                    batch_size=batch_size,
-                    context_length=context_length,
-                    learning_rate=3e-4,
-                    device=torch.device(args.device),
-                    token_cache=token_cache,
-                    output=output,
+        should_select = args.mode in {"select", "all"} or not existing_selection.exists()
+        if should_select:
+            if not args.distributed or is_main_process():
+                points = freeze_selection(
+                    args.atlas_summary,
+                    output,
+                    quick=quick,
+                    seed=args.seed,
+                    discovery_summary=args.discovery_summary,
                 )
-                append_jsonl(results_path, [result])
-            except (RuntimeError, ValueError) as error:
-                record_failure(output, {"point": point, "task": task}, error)
-                raise
-            print(f"[{position + 1}] point={point['point_id']} task={task} seed={paired_seed}")
-    if args.mode in {"analyze", "all"}:
-        analyze(output, args.bootstrap_draws)
-        print(f"Experiment 1D results written to {output}")
+            if args.distributed:
+                barrier()
+                if not is_main_process():
+                    points = load_selected_points(output, args.preset)
+        else:
+            points = load_selected_points(output, args.preset)
+        include_text = args.include_text or not quick
+        token_cache = None
+        cache_path = output / "tinystories_train.uint8"
+        if include_text:
+            if not args.distributed or is_main_process():
+                built = build_tinystories_cache(
+                    cache_path,
+                    split="train",
+                    local_path=args.tinystories_file,
+                    max_stories=100 if quick else None,
+                )
+                write_json(
+                    output / "data_hashes.json",
+                    {"tinystories_train_uint8_sha256": file_sha256(built)},
+                )
+            if args.distributed:
+                barrier()
+            if args.mode in {"run", "all"}:
+                token_cache = load_token_cache(cache_path)
+        if args.mode in {"run", "all"}:
+            seeds = args.seeds or (1 if quick else 8)
+            steps = args.steps or (10 if quick else 2000)
+            batch_size = args.batch_size or (4 if quick else 64)
+            context_length = 32 if quick else 128
+            tasks = ["associative_recall"] + (["tinystories"] if include_text else [])
+            jobs = [
+                (point, task, args.seed + seed_index)
+                for point in points
+                for task in tasks
+                for seed_index in range(seeds)
+            ]
+            completed_rows = []
+            for path in output.glob("training_results_shard_*.jsonl"):
+                completed_rows.extend(read_jsonl(path))
+            completed = {
+                (row["point_id"], row["task"], row["paired_seed"])
+                for row in completed_rows
+            }
+            assigned = jobs[shard_index::num_shards]
+            device = resolve_device(args)
+            results_path = output / f"training_results_shard_{shard_index:04d}.jsonl"
+            device_name = (
+                torch.cuda.get_device_name(device) if device.type == "cuda" else str(device)
+            )
+            print(
+                f"rank {rank}/{world_size} device={device} ({device_name}) "
+                f"shard {shard_index}/{num_shards}: {len(assigned)} jobs "
+                f"({len(completed)} already on disk)"
+            )
+            for position, (point, task, paired_seed) in enumerate(assigned):
+                key = (point["point_id"], task, paired_seed)
+                if key in completed:
+                    continue
+                try:
+                    result = train_one(
+                        point,
+                        task=task,
+                        paired_seed=paired_seed,
+                        steps=steps,
+                        batch_size=batch_size,
+                        context_length=context_length,
+                        learning_rate=3e-4,
+                        device=device,
+                        token_cache=token_cache,
+                        output=output,
+                    )
+                    result["worker_rank"] = rank
+                    result["worker_world_size"] = world_size
+                    append_jsonl(results_path, [result])
+                except (RuntimeError, ValueError) as error:
+                    record_failure(
+                        output, {"point": point, "task": task, "rank": rank}, error
+                    )
+                    raise
+                print(
+                    f"[rank {rank} {position + 1}/{len(assigned)}] "
+                    f"point={point['point_id']} task={task} seed={paired_seed}"
+                )
+            if args.distributed:
+                barrier()
+        if args.mode in {"analyze", "all"}:
+            if args.distributed and not is_main_process():
+                return
+            analyze(output, args.bootstrap_draws)
+            print(f"Experiment 1D results written to {output}")
+    finally:
+        if args.distributed:
+            cleanup()
 
 
 if __name__ == "__main__":

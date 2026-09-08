@@ -10,12 +10,27 @@ if ($DataFile) {
 if (-not (Test-Path "code/exp1d/data/$Preset/selected_points.json")) {
   python code/exp1d/run.py --preset $Preset --mode select
 }
-python code/exp1d/run.py `
-  --preset $Preset `
-  --mode run `
-  --shard-index $ShardIndex `
-  --num-shards $NumShards `
-  @Extra
+
+$NumGpus = python -c "import torch; print(torch.cuda.device_count() if torch.cuda.is_available() else 0)"
+$NumGpus = [int]([string]$NumGpus).Trim()
+
+if ($NumGpus -gt 1) {
+  Write-Host "using $NumGpus GPUs via torchrun"
+  torchrun --standalone --nproc_per_node=$NumGpus code/exp1d/run.py `
+    --preset $Preset `
+    --mode run `
+    --shard-index $ShardIndex `
+    --num-shards $NumShards `
+    --distributed `
+    @Extra
+} else {
+  python code/exp1d/run.py `
+    --preset $Preset `
+    --mode run `
+    --shard-index $ShardIndex `
+    --num-shards $NumShards `
+    @Extra
+}
 if ($NumShards -eq "1") {
   python code/exp1d/run.py --preset $Preset --mode analyze
 }
