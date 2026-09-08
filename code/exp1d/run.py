@@ -6,6 +6,7 @@ import argparse
 import csv
 import json
 import math
+import os
 import sys
 import time
 from collections import defaultdict
@@ -60,8 +61,18 @@ def read_summary(path: Path) -> list[dict]:
     return rows
 
 
+def default_output(preset: str) -> Path:
+    if os.environ.get("KAGGLE_KERNEL_RUN_TYPE"):
+        return Path("/kaggle/working") / "exp1d" / "data" / preset
+    return Path(__file__).parent / "data" / preset
+
+
 def default_discovery_summary(preset: str) -> Path:
     return Path(__file__).parents[1] / "exp1b" / "data" / preset / "atlas_summary.csv"
+
+
+def bundled_selected_points(preset: str) -> Path:
+    return Path(__file__).parent / "data" / preset / "selected_points.json"
 
 
 def atlas_tag(path: Path, fallback: str) -> str:
@@ -367,7 +378,7 @@ def main() -> None:
         )
     if args.discovery_summary is None:
         args.discovery_summary = default_discovery_summary(args.preset)
-    output = ensure_output(args.output or Path(__file__).parent / "data" / args.preset)
+    output = ensure_output(args.output or default_output(args.preset))
     create_manifest(
         output,
         experiment="exp1d",
@@ -385,7 +396,8 @@ def main() -> None:
             discovery_summary=args.discovery_summary,
         )
     else:
-        points = json.loads(selection_path.read_text(encoding="utf-8"))["points"]
+        source = selection_path if selection_path.exists() else bundled_selected_points(args.preset)
+        points = json.loads(source.read_text(encoding="utf-8"))["points"]
     include_text = args.include_text or not quick
     token_cache = None
     if include_text:
