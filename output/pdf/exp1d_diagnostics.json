@@ -1,0 +1,407 @@
+{
+  "n_jobs": 1344,
+  "n_points": 84,
+  "n_seeds": 8,
+  "seeds": [
+    20260829,
+    20260830,
+    20260831,
+    20260832,
+    20260833,
+    20260834,
+    20260835,
+    20260836
+  ],
+  "divergence_rate": 0.0,
+  "n_diverged": 0,
+  "stratum_sources": {
+    "diffuse": {
+      "exp1c": 15,
+      "exp1b": 0,
+      "corner": 0
+    },
+    "concentrated": {
+      "exp1c": 0,
+      "exp1b": 15,
+      "corner": 0
+    },
+    "self_locked": {
+      "exp1c": 0,
+      "exp1b": 15,
+      "corner": 0
+    },
+    "screened_candidate": {
+      "exp1c": 15,
+      "exp1b": 0,
+      "corner": 0
+    },
+    "boundary_uncertain": {
+      "exp1c": 20,
+      "exp1b": 0,
+      "corner": 0
+    },
+    "corner_independent": {
+      "exp1c": 0,
+      "exp1b": 0,
+      "corner": 1
+    },
+    "corner_orthogonal": {
+      "exp1c": 0,
+      "exp1b": 0,
+      "corner": 1
+    },
+    "corner_tied": {
+      "exp1c": 0,
+      "exp1b": 0,
+      "corner": 1
+    },
+    "corner_anti_tied": {
+      "exp1c": 0,
+      "exp1b": 0,
+      "corner": 1
+    }
+  },
+  "scale_stats": {
+    "diffuse": {
+      "n": 15,
+      "mean_s": 0.8008340319923792,
+      "median_s": 0.80183695257004
+    },
+    "concentrated": {
+      "n": 15,
+      "mean_s": 2.296920786079307,
+      "median_s": 2.0
+    },
+    "self_locked": {
+      "n": 15,
+      "mean_s": 2.805400593513388,
+      "median_s": 2.8284271247461903
+    },
+    "screened_candidate": {
+      "n": 15,
+      "mean_s": 0.7830083771487303,
+      "median_s": 0.7766360769311786
+    },
+    "boundary_uncertain": {
+      "n": 20,
+      "mean_s": 0.7972415865986152,
+      "median_s": 0.7990375684503221
+    },
+    "corner_independent": {
+      "n": 1,
+      "mean_s": 0.7766360769311786,
+      "median_s": 0.7766360769311786
+    },
+    "corner_orthogonal": {
+      "n": 1,
+      "mean_s": 0.7766360769311786,
+      "median_s": 0.7766360769311786
+    },
+    "corner_tied": {
+      "n": 1,
+      "mean_s": 0.7766360769311786,
+      "median_s": 0.7766360769311786
+    },
+    "corner_anti_tied": {
+      "n": 1,
+      "mean_s": 0.7766360769311786,
+      "median_s": 0.7766360769311786
+    }
+  },
+  "comparisons": [
+    {
+      "task": "associative_recall",
+      "paired_seeds": 8,
+      "screened_minus_pathology_loss_decrease_per_token": -1.1628224617905178e-07,
+      "ci95_lower": -4.675743858226469e-07,
+      "ci95_upper": 2.4734206911590167e-07,
+      "atlas_useful_gate": false,
+      "implied_total_loss_gap": -0.014884127510918627,
+      "mean_tokens_seen": 128000.0,
+      "paired_seed_deltas": [
+        -2.4074738224347646e-07,
+        7.18013197183608e-07,
+        -4.274573591020401e-07,
+        -6.440497106976174e-08,
+        -1.1260981361071532e-07,
+        -1.0243638522095132e-06,
+        -3.771252930164336e-07,
+        5.984375046359182e-07
+      ]
+    },
+    {
+      "task": "tinystories",
+      "paired_seeds": 8,
+      "screened_minus_pathology_loss_decrease_per_token": 2.0622870437768535e-08,
+      "ci95_lower": 1.864559552713113e-08,
+      "ci95_upper": 2.3180861697053654e-08,
+      "atlas_useful_gate": true,
+      "implied_total_loss_gap": 0.3378851092523997,
+      "mean_tokens_seen": 16384000.0,
+      "paired_seed_deltas": [
+        2.807612391835491e-08,
+        1.978010421023812e-08,
+        1.910586126743719e-08,
+        1.797322895274388e-08,
+        1.925883067694171e-08,
+        1.9745128681986682e-08,
+        2.3716616528367463e-08,
+        1.732706926607832e-08
+      ]
+    }
+  ],
+  "stratum_tables": {
+    "associative_recall": [
+      {
+        "stratum": "screened_candidate",
+        "n": 120,
+        "n_points": 15,
+        "mean_initial_loss": 6.006715977191925,
+        "mean_final_loss": 4.172074341773987,
+        "mean_total_drop": 1.8346416354179382,
+        "std_total_drop": 0.10669140481417738,
+        "mean_loss_decrease_per_token": 1.433313777670264e-05,
+        "mean_clip_freq": 1.0,
+        "mean_elapsed_seconds": 127.521181676475
+      },
+      {
+        "stratum": "diffuse",
+        "n": 120,
+        "n_points": 15,
+        "mean_initial_loss": 6.017172956466675,
+        "mean_final_loss": 4.172266836961111,
+        "mean_total_drop": 1.8449061195055643,
+        "std_total_drop": 0.08956717194104694,
+        "mean_loss_decrease_per_token": 1.4413329058637222e-05,
+        "mean_clip_freq": 1.0,
+        "mean_elapsed_seconds": 350.53472121425
+      },
+      {
+        "stratum": "concentrated",
+        "n": 120,
+        "n_points": 15,
+        "mean_initial_loss": 6.059917322794596,
+        "mean_final_loss": 4.172438828150431,
+        "mean_total_drop": 1.887478494644165,
+        "std_total_drop": 0.10803762296095362,
+        "mean_loss_decrease_per_token": 1.4745925739407539e-05,
+        "mean_clip_freq": 1.0,
+        "mean_elapsed_seconds": 181.34205994878332
+      },
+      {
+        "stratum": "self_locked",
+        "n": 120,
+        "n_points": 15,
+        "mean_initial_loss": 5.987565382321676,
+        "mean_final_loss": 4.171372707684835,
+        "mean_total_drop": 1.8161926746368409,
+        "std_total_drop": 0.12109594752735581,
+        "mean_loss_decrease_per_token": 1.4189005270600318e-05,
+        "mean_clip_freq": 1.0,
+        "mean_elapsed_seconds": 110.95189051912504
+      },
+      {
+        "stratum": "boundary_uncertain",
+        "n": 160,
+        "n_points": 20,
+        "mean_initial_loss": 6.0132029235363005,
+        "mean_final_loss": 4.172233501076699,
+        "mean_total_drop": 1.8409694224596023,
+        "std_total_drop": 0.09621641981433887,
+        "mean_loss_decrease_per_token": 1.4382573612965646e-05,
+        "mean_clip_freq": 1.0,
+        "mean_elapsed_seconds": 115.33015501100624
+      },
+      {
+        "stratum": "corner_independent",
+        "n": 8,
+        "n_points": 1,
+        "mean_initial_loss": 6.013487160205841,
+        "mean_final_loss": 4.171643793582916,
+        "mean_total_drop": 1.8418433666229248,
+        "std_total_drop": 0.10445092924474109,
+        "mean_loss_decrease_per_token": 1.43894013017416e-05,
+        "mean_clip_freq": 1.0,
+        "mean_elapsed_seconds": 93.99715144449999
+      },
+      {
+        "stratum": "corner_orthogonal",
+        "n": 8,
+        "n_points": 1,
+        "mean_initial_loss": 6.024558961391449,
+        "mean_final_loss": 4.17211389541626,
+        "mean_total_drop": 1.8524450659751892,
+        "std_total_drop": 0.09061770992616967,
+        "mean_loss_decrease_per_token": 1.4472227077931165e-05,
+        "mean_clip_freq": 1.0,
+        "mean_elapsed_seconds": 114.62408738400006
+      },
+      {
+        "stratum": "corner_tied",
+        "n": 8,
+        "n_points": 1,
+        "mean_initial_loss": 5.983101427555084,
+        "mean_final_loss": 4.172168791294098,
+        "mean_total_drop": 1.8109326362609863,
+        "std_total_drop": 0.12007308457893079,
+        "mean_loss_decrease_per_token": 1.4147911220788955e-05,
+        "mean_clip_freq": 1.0,
+        "mean_elapsed_seconds": 91.78688370987516
+      },
+      {
+        "stratum": "corner_anti_tied",
+        "n": 8,
+        "n_points": 1,
+        "mean_initial_loss": 6.000150918960571,
+        "mean_final_loss": 4.17192804813385,
+        "mean_total_drop": 1.8282228708267212,
+        "std_total_drop": 0.09975306860677136,
+        "mean_loss_decrease_per_token": 1.428299117833376e-05,
+        "mean_clip_freq": 1.0,
+        "mean_elapsed_seconds": 113.0369724008749
+      }
+    ],
+    "tinystories": [
+      {
+        "stratum": "screened_candidate",
+        "n": 120,
+        "n_points": 15,
+        "mean_initial_loss": 6.038025589783986,
+        "mean_final_loss": 1.3600102384885153,
+        "mean_total_drop": 4.678015351295471,
+        "std_total_drop": 0.22166321485341947,
+        "mean_loss_decrease_per_token": 2.855233979062177e-07,
+        "mean_clip_freq": 0.06065,
+        "mean_elapsed_seconds": 109.80935708330001
+      },
+      {
+        "stratum": "diffuse",
+        "n": 120,
+        "n_points": 15,
+        "mean_initial_loss": 6.032141653696696,
+        "mean_final_loss": 1.3649376273155212,
+        "mean_total_drop": 4.6672040263811745,
+        "std_total_drop": 0.24828547518727812,
+        "mean_loss_decrease_per_token": 2.8486352700080416e-07,
+        "mean_clip_freq": 0.11465833333333333,
+        "mean_elapsed_seconds": 99.13171291069165
+      },
+      {
+        "stratum": "concentrated",
+        "n": 120,
+        "n_points": 15,
+        "mean_initial_loss": 6.028557312488556,
+        "mean_final_loss": 1.6189925829569498,
+        "mean_total_drop": 4.409564729531606,
+        "std_total_drop": 0.29794796730367146,
+        "mean_loss_decrease_per_token": 2.691384722614506e-07,
+        "mean_clip_freq": 0.012816666666666669,
+        "mean_elapsed_seconds": 108.87653122116669
+      },
+      {
+        "stratum": "self_locked",
+        "n": 120,
+        "n_points": 15,
+        "mean_initial_loss": 6.03825577100118,
+        "mean_final_loss": 2.094633800784747,
+        "mean_total_drop": 3.9436219702164332,
+        "std_total_drop": 0.3343373326414413,
+        "mean_loss_decrease_per_token": 2.406995831430928e-07,
+        "mean_clip_freq": 0.012520833333333337,
+        "mean_elapsed_seconds": 109.94237306761669
+      },
+      {
+        "stratum": "boundary_uncertain",
+        "n": 160,
+        "n_points": 20,
+        "mean_initial_loss": 6.032031381130219,
+        "mean_final_loss": 1.36365886926651,
+        "mean_total_drop": 4.6683725118637085,
+        "std_total_drop": 0.2418978753262187,
+        "mean_loss_decrease_per_token": 2.849348456948064e-07,
+        "mean_clip_freq": 0.11750000000000001,
+        "mean_elapsed_seconds": 106.95727376751256
+      },
+      {
+        "stratum": "corner_independent",
+        "n": 8,
+        "n_points": 1,
+        "mean_initial_loss": 6.0387356877326965,
+        "mean_final_loss": 1.3608218282461166,
+        "mean_total_drop": 4.67791385948658,
+        "std_total_drop": 0.2677543466160593,
+        "mean_loss_decrease_per_token": 2.8551720333780394e-07,
+        "mean_clip_freq": 0.0868125,
+        "mean_elapsed_seconds": 99.165483053
+      },
+      {
+        "stratum": "corner_orthogonal",
+        "n": 8,
+        "n_points": 1,
+        "mean_initial_loss": 6.029711842536926,
+        "mean_final_loss": 1.3606435507535934,
+        "mean_total_drop": 4.669068291783333,
+        "std_total_drop": 0.2611067284456439,
+        "mean_loss_decrease_per_token": 2.849773127309163e-07,
+        "mean_clip_freq": 0.08375,
+        "mean_elapsed_seconds": 109.54964885125
+      },
+      {
+        "stratum": "corner_tied",
+        "n": 8,
+        "n_points": 1,
+        "mean_initial_loss": 6.041905403137207,
+        "mean_final_loss": 1.3595092445611954,
+        "mean_total_drop": 4.682396158576012,
+        "std_total_drop": 0.20843324274729078,
+        "mean_loss_decrease_per_token": 2.8579078116308666e-07,
+        "mean_clip_freq": 0.029875,
+        "mean_elapsed_seconds": 100.76621330287495
+      },
+      {
+        "stratum": "corner_anti_tied",
+        "n": 8,
+        "n_points": 1,
+        "mean_initial_loss": 6.028492569923401,
+        "mean_final_loss": 1.3662942945957184,
+        "mean_total_drop": 4.6621982753276825,
+        "std_total_drop": 0.2569978503013973,
+        "mean_loss_decrease_per_token": 2.845580002031056e-07,
+        "mean_clip_freq": 0.15681250000000002,
+        "mean_elapsed_seconds": 107.47950226975001
+      }
+    ]
+  },
+  "frozen_before_training": true,
+  "primary_label_rule": "majority_reference",
+  "discovery_label_rule": "preregistered",
+  "requested_counts": {
+    "boundary_uncertain": 20,
+    "concentrated": 15,
+    "diffuse": 15,
+    "screened_candidate": 15,
+    "self_locked": 15
+  },
+  "selection_stratum_sources": {
+    "boundary_uncertain": {
+      "discovery": 0,
+      "primary": 20
+    },
+    "concentrated": {
+      "discovery": 15,
+      "primary": 0
+    },
+    "diffuse": {
+      "discovery": 0,
+      "primary": 15
+    },
+    "screened_candidate": {
+      "discovery": 0,
+      "primary": 15
+    },
+    "self_locked": {
+      "discovery": 15,
+      "primary": 0
+    }
+  }
+}

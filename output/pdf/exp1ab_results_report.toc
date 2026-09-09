@@ -1,53 +1,79 @@
-\contentsline {chapter}{\numberline {1}Executive Summary}{3}{chapter.1}%
-\contentsline {chapter}{\numberline {2}Scientific Context and Motivation}{4}{chapter.2}%
-\contentsline {section}{\numberline {2.1}What problem is being studied?}{4}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Why staged experiments before training a large LM?}{4}{section.2.2}%
-\contentsline {chapter}{\numberline {3}Parameterization and Terminology Glossary}{5}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Coefficient tuple $(s,\alpha ,\beta ,\gamma )$}{5}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Token geometry notation}{5}{section.3.2}%
-\contentsline {section}{\numberline {3.3}Attention-distribution metrics (1B)}{5}{section.3.3}%
-\contentsline {section}{\numberline {3.4}Preregistered descriptive labels}{6}{section.3.4}%
-\contentsline {chapter}{\numberline {4}Experiment 1A: Mathematical and Implementation Gate}{7}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Purpose}{7}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Experimental design}{7}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Configuration grid}{7}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}Monte Carlo protocol}{7}{subsection.4.2.2}%
-\contentsline {subsection}{\numberline {4.2.3}Hypothesis tests}{8}{subsection.4.2.3}%
-\contentsline {subsection}{\numberline {4.2.4}Auxiliary checks (\texttt {checks.json})}{8}{subsection.4.2.4}%
-\contentsline {section}{\numberline {4.3}Results}{8}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Gate decision}{8}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}Moment accuracy}{8}{subsection.4.3.2}%
-\contentsline {subsection}{\numberline {4.3.3}Auxiliary check highlights}{9}{subsection.4.3.3}%
-\contentsline {subsection}{\numberline {4.3.4}Interpretation of 1A}{9}{subsection.4.3.4}%
-\contentsline {chapter}{\numberline {5}Experiment 1B: Discovery Atlas}{10}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Purpose}{10}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Reference geometry and grid}{10}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Measurement strata}{10}{section.5.3}%
-\contentsline {section}{\numberline {5.4}Analysis pipeline}{10}{section.5.4}%
-\contentsline {section}{\numberline {5.5}Pilot thresholds}{11}{section.5.5}%
-\contentsline {chapter}{\numberline {6}Experiment 1B Results}{12}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Global label histogram}{12}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Synthetic vs.\ real activations}{12}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Reference stratum deep dive}{12}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Logit moments inside the 1B forward pass}{13}{section.6.4}%
-\contentsline {paragraph}{What is stored.}{13}{section*.3}%
-\contentsline {paragraph}{The retracted statistic.}{13}{section*.4}%
-\contentsline {paragraph}{Full-data calibration (this report).}{13}{section*.5}%
-\contentsline {section}{\numberline {6.5}Phase-map visualization}{15}{section.6.5}%
-\contentsline {section}{\numberline {6.6}Label stability under threshold perturbation}{18}{section.6.6}%
-\contentsline {chapter}{\numberline {7}Experiment 1C: Adaptive Refinement and Transfer}{19}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Purpose}{19}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Compute that was merged}{19}{section.7.2}%
-\contentsline {section}{\numberline {7.3}Surrogate held-out metrics}{19}{section.7.3}%
-\contentsline {section}{\numberline {7.4}Adaptive-cell labels}{20}{section.7.4}%
-\contentsline {section}{\numberline {7.5}Why the portfolio did not freeze}{20}{section.7.5}%
-\contentsline {section}{\numberline {7.6}Label sensitivity}{20}{section.7.6}%
-\contentsline {chapter}{\numberline {8}Synthesis and Scientific Reading}{21}{chapter.8}%
-\contentsline {section}{\numberline {8.1}What 1A established}{21}{section.8.1}%
-\contentsline {section}{\numberline {8.2}What 1B established}{21}{section.8.2}%
-\contentsline {section}{\numberline {8.3}What 1C established}{21}{section.8.3}%
-\contentsline {section}{\numberline {8.4}What is \emph {not} yet established}{21}{section.8.4}%
-\contentsline {chapter}{\numberline {9}Limitations and Provenance}{23}{chapter.9}%
-\contentsline {chapter}{\numberline {10}Recommended Next Steps}{24}{chapter.10}%
-\contentsline {chapter}{\numberline {A}Holm--Bonferroni reminder}{25}{appendix.A}%
-\contentsline {chapter}{\numberline {B}Bootstrap procedure in 1B}{26}{appendix.B}%
+\contentsline {chapter}{\numberline {1}How to Read This Document}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}What this document is for}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}A one-page map of the four experiments}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}How to use this report when writing the paper}{2}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Executive Summary}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Headline 1B findings}{4}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Headline 1C findings}{4}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Headline 1D findings}{5}{section.2.3}%
+\contentsline {chapter}{\numberline {3}Scientific Context and Motivation}{6}{chapter.3}%
+\contentsline {section}{\numberline {3.1}The everyday picture}{6}{section.3.1}%
+\contentsline {section}{\numberline {3.2}What problem is being studied?}{6}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Why ``geometry'' is not a metaphor for 3-D space}{7}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Why staged experiments before training a large language model?}{7}{section.3.4}%
+\contentsline {chapter}{\numberline {4}Parameterization and Terminology Glossary}{9}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Coefficient tuple $(s,\alpha ,\beta ,\gamma )$}{9}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}The two scales that people mix up}{10}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}$s$ is already a $1/\sqrt {d}$ multiplier, and that is not why it fails to transfer}{10}{subsection.4.1.2}%
+\contentsline {section}{\numberline {4.2}Token geometry notation}{11}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Attention-distribution metrics (1B)}{11}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Preregistered descriptive labels}{12}{section.4.4}%
+\contentsline {chapter}{\numberline {5}Experiment 1A: Mathematical and Implementation Gate}{14}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Purpose}{14}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Experimental design}{15}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Configuration grid}{15}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Monte Carlo protocol}{15}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Hypothesis tests}{15}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}Auxiliary checks (\texttt {checks.json})}{16}{subsection.5.2.4}%
+\contentsline {section}{\numberline {5.3}Results}{16}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Gate decision}{16}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Moment accuracy}{16}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}Auxiliary check highlights}{17}{subsection.5.3.3}%
+\contentsline {subsection}{\numberline {5.3.4}Interpretation of 1A}{17}{subsection.5.3.4}%
+\contentsline {chapter}{\numberline {6}Experiment 1B: Discovery Atlas}{18}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Purpose}{18}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Reference geometry and grid}{18}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Measurement strata}{19}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Analysis pipeline}{19}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Pilot thresholds}{19}{section.6.5}%
+\contentsline {chapter}{\numberline {7}Experiment 1B Results}{21}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Global label histogram}{21}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Synthetic vs.\ real activations}{21}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Reference stratum deep dive}{22}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Logit moments inside the 1B forward pass}{22}{section.7.4}%
+\contentsline {paragraph}{What is stored.}{22}{section*.3}%
+\contentsline {paragraph}{The retracted statistic.}{23}{section*.4}%
+\contentsline {paragraph}{Full-data calibration (this report).}{23}{section*.5}%
+\contentsline {section}{\numberline {7.5}Phase-map visualization}{25}{section.7.5}%
+\contentsline {section}{\numberline {7.6}Label stability under threshold perturbation}{28}{section.7.6}%
+\contentsline {chapter}{\numberline {8}Experiment 1C: Adaptive Refinement and Transfer}{29}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Purpose}{29}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Compute that was merged}{29}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Surrogate held-out metrics}{30}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Adaptive-cell labels}{30}{section.8.4}%
+\contentsline {section}{\numberline {8.5}How the portfolio was frozen}{31}{section.8.5}%
+\contentsline {section}{\numberline {8.6}Label sensitivity}{31}{section.8.6}%
+\contentsline {chapter}{\numberline {9}Experiment 1D: One-Block Trainability}{32}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Purpose}{32}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Frozen selection}{32}{section.9.2}%
+\contentsline {section}{\numberline {9.3}$s$ does not transfer across $(d,m)$}{33}{section.9.3}%
+\contentsline {section}{\numberline {9.4}Training protocol}{34}{section.9.4}%
+\contentsline {section}{\numberline {9.5}Primary gate}{35}{section.9.5}%
+\contentsline {chapter}{\numberline {10}Experiment 1D Results}{37}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Associative recall is not a discriminating probe}{37}{section.10.1}%
+\contentsline {section}{\numberline {10.2}TinyStories: high-scale pathology trains worse}{37}{section.10.2}%
+\contentsline {paragraph}{Story A, the preregistered one.}{38}{section*.15}%
+\contentsline {paragraph}{Story B, the exploratory one.}{38}{section*.16}%
+\contentsline {section}{\numberline {10.3}What 1D may and may not claim}{39}{section.10.3}%
+\contentsline {chapter}{\numberline {11}Synthesis and Scientific Reading}{41}{chapter.11}%
+\contentsline {section}{\numberline {11.1}What 1A established}{41}{section.11.1}%
+\contentsline {section}{\numberline {11.2}What 1B established}{41}{section.11.2}%
+\contentsline {section}{\numberline {11.3}What 1C established}{41}{section.11.3}%
+\contentsline {section}{\numberline {11.4}What 1D established}{42}{section.11.4}%
+\contentsline {section}{\numberline {11.5}What is \emph {not} yet established}{42}{section.11.5}%
+\contentsline {section}{\numberline {11.6}A candidate paper spine}{42}{section.11.6}%
+\contentsline {chapter}{\numberline {12}Limitations and Provenance}{44}{chapter.12}%
+\contentsline {chapter}{\numberline {13}Recommended Next Steps}{46}{chapter.13}%
+\contentsline {chapter}{\numberline {A}Holm--Bonferroni reminder}{47}{appendix.A}%
+\contentsline {chapter}{\numberline {B}Bootstrap procedure in 1B}{48}{appendix.B}%
+\contentsline {chapter}{\numberline {C}1D paired bootstrap}{49}{appendix.C}%
